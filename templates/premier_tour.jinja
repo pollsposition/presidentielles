@@ -1,0 +1,59 @@
+<meta charset='UTF-8'>
+
+<div class='container intro'>
+    <p class='timestamp'>Mis à jour le {{ maj.date }}, à {{ maj.heure }}</p>
+    <h1 class='title'>Derniers Sondages</h1>
+    <h2 class='subtitle'>Mis à jour en continu</h2>
+</div>
+<div class='polls'>
+    {% for date, sondages in sondage.items() %}
+        <div class='day-container'>
+            <h2 class='day'>{{ date }}</h2>
+            <table class='polls-table'>
+                <thead id='table-header'>
+                    <tr>
+                        <th class='type'></th>
+                        <th class='dates'>Dates</th>
+                        <th class='pollster'>Institut</th>
+                        <th class='sample'>Personnes interrogées</th>
+                        <th class='sample-votes'>Intentions exprimées</th>
+                        <th class='results', colspan="2">Résultats</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sondage in sondages %}
+                        {% set sondage_loop = loop %}
+                        {% for hypothese in sondage.premier_tour.values() %}
+                            {% set hypothese_loop = loop %}
+                            {% for candidat, intention in hypothese.intentions.items() %}
+                                {% set intention_loop = loop %}
+                                <tr>
+                                    {% if hypothese_loop.index0 == 0 and intention_loop.index0 == 0 %}
+                                        <td class='type first hide-mobile'>Premier tour</td>
+                                        <td class='dates hide-mobile'>{{ sondage.date_publication }}</td>
+                                        <td class='pollster'><a href="{{ sondage.lien }}">{{ sondage.institut }}</a></th>
+                                    {% else %}
+                                        <td class='type hide-mobile'></td>
+                                        <td class='dates hide-mobile'></td>
+                                        <td class='pollster'></th>
+                                    {% endif %}
+                                    
+                                    {% if intention_loop.index0 == 0 %}
+                                        <td class='sample hide-mobile'>{{ sondage.echantillon }}</td>
+                                        <td class='sample-votes hide-mobile'>{{ hypothese.intentions_exprimees }}</td>
+                                    {% else %}
+                                        <td class='sample hide-mobile'></td>
+                                        <td class='sample-votes hide-mobile'></td>
+                                    {% endif %}
+
+                                    <td class='candidate'>{{ candidat }} <td>
+                                    <td class='value'>{{ intention }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+</div>
