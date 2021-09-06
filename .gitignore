@@ -1,0 +1,4 @@
+*.png
+*.json
+.ipynb_checkpoints
+__pychache__
