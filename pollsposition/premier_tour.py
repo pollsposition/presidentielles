@@ -29,11 +29,12 @@ for poll in polls.values():
             hypothese['intentions_exprimees'] = int(hypothese['intentions_exprimees'] * poll['echantillon'] / 100)
 
         # We convert all % to strings, 0 becomes <.5%
-        for intention in hypothese['intentions'].values():
+        for candidat, intention in hypothese['intentions'].items():
             if intention < 0.5:
-                intention = "-"
+                formatted_intention = "-"
             else:
-                intention = f"{intention}%"
+                formatted_intention = f"{intention}"
+            hypothese['intentions'][candidat] = formatted_intention
 
 
 # -------------------------------------------------------------------

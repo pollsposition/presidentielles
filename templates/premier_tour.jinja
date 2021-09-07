@@ -17,7 +17,7 @@
                         <th class='pollster'>Institut</th>
                         <th class='sample'>Personnes interrogées</th>
                         <th class='sample-votes'>Intentions exprimées</th>
-                        <th class='results', colspan="2">Résultats</th>
+                        <th class='results', colspan="2">Résultats (en %)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,8 +45,7 @@
                                         <td class='sample hide-mobile'></td>
                                         <td class='sample-votes hide-mobile'></td>
                                     {% endif %}
-
-                                    <td class='candidate'>{{ candidat }} <td>
+                                    <td class='candidate'>{{ candidat }}</td>
                                     <td class='value'>{{ intention }}</td>
                                 </tr>
                             {% endfor %}
