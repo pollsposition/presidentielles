@@ -110,7 +110,7 @@ filename
 #+RESULTS:
 [[file:/tmp/babel-KLeE5y/figureGCXCRN.png]]
 
-#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
 fig = intentions.plot(
     intentions_r,
@@ -185,7 +185,7 @@ filename
 #+RESULTS:
 [[file:/tmp/babel-KLeE5y/figurecfNdrS.png]]
 
-#+begin_src python :session bva :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+#+begin_src python :session bva :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
 fig = intentions.plot(
     intentions_r,
