@@ -2,3 +2,6 @@
 *.json
 .ipynb_checkpoints
 __pychache__
+*.egg-info
+/tags
+__pycache__

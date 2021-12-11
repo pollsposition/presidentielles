@@ -1,7 +1,5 @@
-altair
-altair_data_server
-altair_saver
-jinja2
+arviz
+imageio
 matplotlib
 numpy
-requests
+pymc3
