@@ -12,7 +12,7 @@ Dans ce document nous recensons les analyses que nous avons pu faire au jour le 
 
 #+description: Import needed libraries
 #+begin_src python :session :results silent :exports none
-import src.intentions as intentions
+import src
 import numpy as np
 import pymc3 as pm
 #+end_src
@@ -74,14 +74,12 @@ assert sum(list(resultats.values())) == 100
 with pm.Model() as bva:
     prior_intentions = np.array(
         [1, 1.5, 2, 10, 1, 3, 6, 24, 19, 2.5, 12, 17, 1]
-    )
+    ) * 0.1
     results_r = np.array(list(resultats.values())) / 100
     precision_r = precision / 100
 
     p = pm.Dirichlet("intentions", prior_intentions)  # Prior too vague?
-    p_err = pm.Uniform("rounding", -precision_r, precision_r)
-    p_prime = p + p_err
-    r = pm.Dirichlet("real_ratios", num_exprimes * p_prime, observed=results_r)
+    r = pm.Dirichlet("real_ratios", num_exprimes * p, observed=results_r)
 
     trace = pm.sample()
 #+end_src
@@ -96,12 +94,12 @@ filename
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-p7HJWP/figureDUzveb.png]]
+[[file:/tmp/babel-5lYmj3/figureEAx2hR.png]]
 
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
-fig = intentions.plot(
+fig = src.intentions.plot(
     intentions_r,
     colors,
     "09/12/2021",
@@ -117,7 +115,7 @@ filename
 #+end_src
 #+attr_org: :width 500
 #+RESULTS:
-[[file:/tmp/babel-p7HJWP/figureZTDWdD.png]]
+[[file:/tmp/babel-5lYmj3/figure7ejmnm.png]]
 
 
 Odoxa ne spécifie pas le % de gens qui sont surs de leur choix, impossible de donner d'autre information.
@@ -153,24 +151,17 @@ assert sum(list(resultats.values())) == 100
 #+RESULTS:
 
 #+begin_src python :session :async true
-srng = np.random.default_rng()
-
-def simulate(intentions, errs):
-    r = srng.dirichlet(intentions)
-    return r + errs
-
-with pm.Model() as model:
+with pm.Model() as bva:
     prior_intentions = np.array(
-        [1, 1.5, 2, 10, 1, 3, 6, 24, 19, 2.5, 12, 17, 1]
+        [.5, 1.5, 9, 2.5, 1, 5, 7, 24, 17, 2.5, 13, 16, 1]
     )
     results_r = np.array(list(resultats.values())) / 100
     precision_r = precision / 100
 
-    intentions = pm.Dirichlet('intentions', prior_intentions)
-    errs = pm.Uniform("errs", -precision_r, precision_r, shape=(len(prior_intentions,)))
-    result = pm.Simulator('result', simulate, params=(intentions, errs), epsilon=0.01, observed=results_r)
+    p = pm.Dirichlet("intentions", prior_intentions)  # Prior too vague?
+    r = pm.Dirichlet("real_ratios", num_exprimes * p, observed=results_r)
 
-    trace = pm.sample_smc(kernel='ABC', chains=1, parallel=True, save_sim_data=True)
+    trace = pm.sample()
 #+end_src
 
 
@@ -179,17 +170,17 @@ with pm.Model() as model:
 #+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
 import arviz as az
 import matplotlib.pyplot as plt
-az.plot_trace(trace[0])
+az.plot_trace(trace)
 plt.savefig(filename, bbox_inches='tight')
 filename
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-p7HJWP/figureTk25wp.png]]
+[[file:/tmp/babel-pSa1ZR/figureOix7Ju.png]]
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
-intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
-fig = intentions.plot(
+intentions_r = {k: trace[0]['intentions'][:,i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
     intentions_r,
     colors,
     "08/12/2021",
@@ -206,7 +197,7 @@ filename
 
 #+attr_org: :width 600
 #+RESULTS:
-[[file:]]
+[[file:/tmp/babel-pSa1ZR/figurebUyJZp.png]]
 
 Il serait quand même judicieux de mettre les gens n'ayant pas exprimé d'opinion sur les graphes.
 
@@ -245,7 +236,7 @@ for c in resultats:
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: v for k, v in resultats_certains.items()}
-fig = intentions.plot(
+fig = src.intentions.plot(
     intentions_r,
     colors,
     "08/12/2021",
@@ -264,6 +255,70 @@ filename
 #+RESULTS:
 [[file:/tmp/babel-l2eJnd/figurey9MbqB.png]]
 
+** Tenir compte des erreurs d'arrondi :model:
+
+Les instituts de sondages ne donnent pas les valeurs des intentions brutes mais il les arrondissent à l'entier le plus proche (ou demi-point de pourcentage le plus proche) ce qui induit une incertitude supplémentaire.
+
+La seule façon vraiment propre de tenir compte des ces erreurs d'arrondi dans PyMC3 est de travailler avec la cumulative (cf [[https://mc-stan.org/docs/2_27/stan-users-guide/bayesian-measurement-error-model.html][cette page du manuel de Stan]]). Or il n'y a pas d'expression analytique ni pour la cumulative de la loi Multinomiale ni pour la loi de Dirichlet. Nous sommes donc obligés de passer par de la likelihood-free inference:
+
+#+begin_src python :session :async true
+srng = np.random.default_rng()
+
+def simulate(intentions, errs):
+    r = srng.dirichlet(intentions)
+    return r + errs
+
+with pm.Model() as model:
+    prior_intentions = np.array(
+        [.5, 1.5, 9, 2.5, 1, 5, 7, 24, 17, 2.5, 13, 16, 1]
+    )
+    results_r = np.array(list(resultats.values())) / 100
+    precision_r = precision / 100
+
+    intentions = pm.Dirichlet('intentions', prior_intentions)
+    errs = pm.Uniform("errs", -precision_r, precision_r, shape=(len(prior_intentions,)))
+    result = pm.Simulator('result', simulate, params=(intentions, errs), epsilon=0.03, observed=results_r)
+
+    trace = pm.sample_smc(kernel='ABC', chains=1, parallel=True, save_sim_data=True)
+#+end_src
+
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+az.plot_trace(trace[0])
+plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-pSa1ZR/figureTLDmEo.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace[0]['intentions'][:,i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "08/12/2021",
+    "BVA pour Orange et RTL",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Certains d'aller voter et exprimant une opinion",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 600
+#+RESULTS:
+[[file:/tmp/babel-pSa1ZR/figuremnDc31.png]]
+
+Il est difficile d'obtenir des résultats qui semblent correct. Pire, il est difficile d'estimer /si/ les résultats sont corrects. On fera sans pour le moment.
+
 ** TODO Nouvelle représentation des indécis, etc :viz:
     - Pour la présentation brute mettre les gens qui n'expriment pas d'intention de vote sur la courbe
     - Avec les gens sûrs de leur choix mettre le % d'indécis en plus
@@ -271,4 +326,20 @@ filename
       Superposer les intervalles, avec un rond creux pour les certains d'aller voter
 ** TODO Pécresse dans les nouveaux sondages :edito:
 ** TODO Pairwise comparisons :viz:
-** TODO Add rounding uncertainty :model:
+** TODO [#A] Check that results coincide with Dirichlet-Multinomial model
+I take it as a given that this Dirichlet-Dirichlet model gives the same results as the corresponding Dirichlet-Multinomial model + return ratios. But that's not obvious. Indeed the multinomial distribution gives
+
+#+begin_src latex :results raw
+\begin{equation}
+  P(X_{1}=x_{1}, \dots, X_{n}=x_{n}) = \frac{n!}{x_{1}! \dots x_{n}!} p_{1}^{x_{1}} \dots p_{n}^{x_{n}}
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  P(X_{1}=x_{1}, \dots, X_{n}=x_{n}) = \frac{n!}{x_{1}! \dots x_{n}!} p_{1}^{x_{1}} \dots p_{n}^{x_{n}}
+\end{equation}
+
+And if we note $n = \sum_i x_i$ and define the new random variable $r_i = X_i / n$ there doesn't seem to be an easy way to write the probability distribution of $r_i$.
+
+I originally came across the idea in [[https://liu.diva-portal.org/smash/get/diva2:945786/FULLTEXT01.pdf][this master's thesis]] (3.1.2.5). This is not justified. The combinatorial justification of the multinomial is very clear, the Dirichlet distribution not so much.
