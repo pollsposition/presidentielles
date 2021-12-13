@@ -12,7 +12,7 @@ Dans ce document nous recensons les analyses que nous avons pu faire au jour le 
 
 #+description: Import needed libraries
 #+begin_src python :session :results silent :exports none
-import src
+import src.intentions
 import numpy as np
 import pymc3 as pm
 #+end_src
@@ -201,7 +201,7 @@ filename
 
 Il serait quand même judicieux de mettre les gens n'ayant pas exprimé d'opinion sur les graphes.
 
-** Sûrs de leur choix
+*** Intentions de vote des gens sûrs leur choix
 
 #+begin_src python :session :results silent
 import math
@@ -255,7 +255,7 @@ filename
 #+RESULTS:
 [[file:/tmp/babel-l2eJnd/figurey9MbqB.png]]
 
-** Tenir compte des erreurs d'arrondi :model:
+*** Tenir compte des erreurs d'arrondi pour les incertitudes :model:
 
 Les instituts de sondages ne donnent pas les valeurs des intentions brutes mais il les arrondissent à l'entier le plus proche (ou demi-point de pourcentage le plus proche) ce qui induit une incertitude supplémentaire.
 
@@ -318,6 +318,134 @@ filename
 [[file:/tmp/babel-pSa1ZR/figuremnDc31.png]]
 
 Il est difficile d'obtenir des résultats qui semblent correct. Pire, il est difficile d'estimer /si/ les résultats sont corrects. On fera sans pour le moment.
+*** Distribution multinomiale comme modèle d'observation :model:
+
+Je prends pour acquis depuis le début que le modèle Dirichlet-Dirichlet donne les mêmes résultats que le modèle Dirichlet-Multinomial correspondant, mais cela n'a rien d'évident.
+
+J'ai rencontré l'idée la première fois dans cette [[https://liu.diva-portal.org/smash/get/diva2:945786/FULLTEXT01.pdf][thèse de master]] (3.1.2.5). Alors que la pertinence du modèle d'observation multinomial se justifie très bien ici, celle du modèle d'observation dirichlet pour les ratios est à confirmer (les résultats ont l'air semblables) mathématiquement.
+
+Décidons d'abandonner le modèle Dirichlet-Dirichlet pour l'instant pour revenir à un modèle Dirichlet-Multinomial basique. On y inclut directement l'effet de l'arrondi, en disant que l'on n'oberver pas directement le ratio $r$ mais $\tilde{r}$ :
+
+#+begin_src latex :results raw
+\begin{align*}
+  \boldsymbol{p} &\sim \operatorname{Dirichlet}(\boldsymbol{\alpha})\\
+  \mathbf{n}  &\sim \operatorname{Multinomial}\left(\mathbf{p}, N)\\
+  \mathbf{r}  &= \frac{\mathbf{n}}{N}\\
+  \tilde{\mathbf{r}} &\sim \operatorname{Uniform}(\mathrm{r}-\delta, \mathrm{r}+\delta)\\
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+  \boldsymbol{p} &\sim \operatorname{Dirichlet}(\boldsymbol{\alpha})\\
+  \mathbf{n}  &\sim \operatorname{Multinomial}\left(\mathbf{p}, N)\\
+  \mathbf{r}  &= \frac{\mathbf{n}}{N}\\
+  \tilde{\mathbf{r}} &\sim \operatorname{Uniform}(\mathrm{r}-\delta, \mathrm{r}+\delta)\\
+\end{align*}
+
+Le modèle s'implémente très facilement dans PyMC3:
+
+#+begin_src python :session :async true
+results_r = np.array(list(resultats.values())) / 100
+precision_r = precision / 100
+
+with pm.Model() as multinomial:
+    prior_intentions = np.array(
+        [.5, 1.5, 9, 2.5, 1, 5, 7, 24, 17, 2.5, 13, 16, 1]
+    ) * 0.1
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    n = pm.Multinomial("respondants", num_exprimes, p, shape=(1, len(prior_intentions)))
+    r = n / num_exprimes
+    r_obs = pm.Uniform('observed', r-precision_r, r+precision_r, observed=results_r)
+
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+az.plot_trace(trace)
+plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-OuSpkx/figure8HnRPR.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "08/12/2021",
+    "BVA pour Orange et RTL",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Certains d'aller voter et exprimant une opinion",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 500
+#+RESULTS:
+[[file:/tmp/babel-OuSpkx/figureFMPKS0.png]]
+
+On voit que les intervalles de confiance sont légèrement élargis. /Supposons maintenant que les résultats sont données à plus ou moins un point près!
+
+#+begin_src python :session :async true
+results_r = np.array(list(resultats.values())) / 100
+precision_r = 1. / 100
+
+with pm.Model() as multinomial:
+    prior_intentions = np.array(
+        [.5, 1.5, 9, 2.5, 1, 5, 7, 24, 17, 2.5, 13, 16, 1]
+    )
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    n = pm.Multinomial("respondants", num_exprimes, p, shape=(1, len(prior_intentions)))
+    r = n / num_exprimes
+    r_obs = pm.Uniform('observed', r-precision_r, r+precision_r, observed=results_r)
+
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+az.plot_trace(trace)
+plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-OuSpkx/figureqJfd6w.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "08/12/2021",
+    "BVA pour Orange et RTL",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Certains d'aller voter et exprimant une opinion",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 500
+#+RESULTS:
+[[file:/tmp/babel-OuSpkx/figurevmQ4Y8.png]]
 
 ** TODO Nouvelle représentation des indécis, etc :viz:
     - Pour la présentation brute mettre les gens qui n'expriment pas d'intention de vote sur la courbe
@@ -326,20 +454,3 @@ Il est difficile d'obtenir des résultats qui semblent correct. Pire, il est dif
       Superposer les intervalles, avec un rond creux pour les certains d'aller voter
 ** TODO Pécresse dans les nouveaux sondages :edito:
 ** TODO Pairwise comparisons :viz:
-** TODO [#A] Check that results coincide with Dirichlet-Multinomial model
-I take it as a given that this Dirichlet-Dirichlet model gives the same results as the corresponding Dirichlet-Multinomial model + return ratios. But that's not obvious. Indeed the multinomial distribution gives
-
-#+begin_src latex :results raw
-\begin{equation}
-  P(X_{1}=x_{1}, \dots, X_{n}=x_{n}) = \frac{n!}{x_{1}! \dots x_{n}!} p_{1}^{x_{1}} \dots p_{n}^{x_{n}}
-\end{equation}
-#+end_src
-
-#+RESULTS:
-\begin{equation}
-  P(X_{1}=x_{1}, \dots, X_{n}=x_{n}) = \frac{n!}{x_{1}! \dots x_{n}!} p_{1}^{x_{1}} \dots p_{n}^{x_{n}}
-\end{equation}
-
-And if we note $n = \sum_i x_i$ and define the new random variable $r_i = X_i / n$ there doesn't seem to be an easy way to write the probability distribution of $r_i$.
-
-I originally came across the idea in [[https://liu.diva-portal.org/smash/get/diva2:945786/FULLTEXT01.pdf][this master's thesis]] (3.1.2.5). This is not justified. The combinatorial justification of the multinomial is very clear, the Dirichlet distribution not so much.
