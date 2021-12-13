@@ -362,6 +362,7 @@ with pm.Model() as multinomial:
 #+end_src
 
 #+RESULTS:
+: /tmp/babel-o4KxvM/python-YhPue2
 
 #+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
 import arviz as az
@@ -454,3 +455,158 @@ filename
       Superposer les intervalles, avec un rond creux pour les certains d'aller voter
 ** TODO Pécresse dans les nouveaux sondages :edito:
 ** TODO Pairwise comparisons :viz:
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+import imageio
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+
+candidates = ("Pécresse", "Le Pen")
+intentions = {"Pécresse": trace["intentions"][:,0,8], "Le Pen": trace["intentions"][:,0,11]}
+diff = intentions[candidates[1]]-intentions[candidates[0]]
+num_wins = int(100 * np.sum(diff>0) / len(p))
+
+x = 100 * srng.choice(diff, 100)
+y = srng.normal(0,.01,len(x))
+
+condlist = [x>0, x<0]
+choicelist = [colors[candidates[1]], colors[candidates[0]]]
+colors_points = np.select(condlist, choicelist)
+
+
+fig, ax  = plt.subplots()
+ax.scatter(x, y, c=colors_points, s=200, edgecolor="white", zorder=2)
+ax.axvline(0, color="black", lw=2)
+ax.axvline(5, ymin=0.1, color=colors[candidates[1]], lw=0.5)
+ax.axvline(-5, ymin=0.1, color=colors[candidates[0]], lw=0.5)
+
+# transparent background
+rect = ax.patch
+rect.set_alpha(0)
+
+# remove borders, ticks and labels
+ax.set_yticklabels([])
+ax.set_ylabel("")
+ax.yaxis.set_ticks_position("none")
+
+ax.set_xticklabels([])
+ax.xaxis.set_ticks_position("none")
+
+spines = ["top", "right", "left", "bottom"]
+for s in spines:
+    ax.spines[s].set_visible(False)
+
+lim = 5 + max(abs(x))
+
+ax.text(
+    lim,
+    0.0,
+    f"{candidates[1]} en tête",
+    fontweight="normal",
+    fontname="Futura PT",
+    va="center",
+    ha="center",
+    fontsize=15,
+    color="black",
+)
+ax.text(
+    lim,
+    -0.006,
+    f"{num_wins} sur 100",
+    fontweight="bold",
+    fontname="Futura PT",
+    va="center",
+    ha="center",
+    fontsize=30,
+    color=colors[candidates[1]],
+)
+
+ax.text(
+    -lim,
+    0.0,
+    f"{candidates[0]} en tête",
+    fontweight="normal",
+    fontname="Futura PT",
+    va="center",
+    ha="center",
+    fontsize=15,
+    color="black",
+)
+ax.text(
+    -lim,
+    -0.006,
+    f"{100-num_wins} sur 100",
+    fontweight="bold",
+    fontname="Futura PT",
+    va="center",
+    ha="center",
+    fontsize=30,
+    color=colors[candidates[0]],
+)
+
+ax.text(
+    0,
+    -0.04,
+    f"Égalité",
+    fontweight="light",
+    fontname="Futura PT",
+    va="top",
+    ha="center",
+    fontsize=16,
+    color="black",
+)
+ax.text(
+    5,
+    -0.04,
+    f"+5%",
+    fontweight="light",
+    fontname="Futura PT",
+    va="bottom",
+    ha="center",
+    fontsize=20,
+    color=colors[candidates[1]],
+)
+ax.text(
+    -5,
+    -0.04,
+    f"+5%",
+    fontweight="light",
+    fontname="Futura PT",
+    va="bottom",
+    ha="center",
+    fontsize=20,
+    color=colors[candidates[0]],
+)
+fig.text(
+    0.93,
+    -0.04,
+    "Tracé avec soin par @pollsposition",
+    ha="right",
+    va="bottom",
+    fontsize=10,
+    fontweight="normal",
+    fontname="Futura PT",
+    color="darkgray",
+)
+
+ax.set_ylim(-0.04, 0.04)
+
+
+ax1 = fig.add_axes([-0.3, 0.9, 0.2, 0.2])
+im = imageio.imread("~/org/roam/images/logo.png")
+ax1.imshow(im)
+ax1.axis("off")
+
+fig.text(
+    -0.1, 1., f"Différentiel {candidates[1]}-{candidates[0]} au premier tour", fontsize=25, fontweight="bold", fontname="Futura PT",  ha='left'
+)
+
+
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 800
+#+RESULTS:
+[[file:/tmp/babel-o4KxvM/figurerQkzwf.png]]
