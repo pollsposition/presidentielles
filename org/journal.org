@@ -4,9 +4,11 @@
 Dans ce document nous recensons les analyses que nous avons pu faire au jour le jours.
 
 #+description: Load the virtual environment
-#+begin_src elisp :exports none
+#+begin_src elisp :session :exports none
 (pyvenv-workon 'polls)
 #+end_src
+
+#+RESULTS:
 
 #+description: Import needed libraries
 #+begin_src python :session :results silent :exports none
@@ -16,25 +18,6 @@ import pymc3 as pm
 #+end_src
 
 * Color schemes :noexport:
-
-#+description: Pastel colors
-#+begin_src python :session :results silent :exports none
-colors = {
-    "Poutou": "#FF9AA2",
-    "Arthaud": "#FF9AA2",
-    "Roussel": "#FF9AA2",
-    "Mélenchon": "#FFB7B2",
-    "Hidalgo": "#FFDAC1",
-    "Jadot": "#E2F0CB",
-    "Montebourg": "#FFDAC1",
-    "Macron": "#C7CEEA",
-    "Pécresse": "#C7CEEA",
-    "Lassalle": "#C7CEEA",
-    "Zemmour": "#141517",
-    "Dupont-Aignan": "#C7CEEA",
-    "Le Pen": "#9597A0",
-}
-#+end_src
 
 #+description: Darker colors from coolors.com
 #+begin_src python :session :results silent :exports none
@@ -50,6 +33,7 @@ colors = {
     "Pécresse": "#748CAB",
     "Lassalle": "#748CAB",
     "Zemmour": "#080708",
+    "Peuvent changer d'avis": "#080708",
     "Dupont-Aignan": "#2E294E",
     "Le Pen": "#292F36",
 }
@@ -67,6 +51,7 @@ Premier sondage d'Odoxa après l'officialisation de la candidature de Pécresse 
 
 #+begin_src python :session :results silent
 num_exprimes = 1391
+precision = 0.25
 resultats = {
     "Arthaud": 1,
     "Poutou": 1.5,
@@ -88,12 +73,15 @@ assert sum(list(resultats.values())) == 100
 #+begin_src python :session :async true :results silent
 with pm.Model() as bva:
     prior_intentions = np.array(
-        [2, 2, 3, 10, 3, 5, 5, 20, 15, 2, 15, 20, 1]
-    ) / 100
-
+        [1, 1.5, 2, 10, 1, 3, 6, 24, 19, 2.5, 12, 17, 1]
+    )
     results_r = np.array(list(resultats.values())) / 100
+    precision_r = precision / 100
+
     p = pm.Dirichlet("intentions", prior_intentions)  # Prior too vague?
-    r = pm.Dirichlet("real_ratios", num_exprimes * p, observed=results_r)
+    p_err = pm.Uniform("rounding", -precision_r, precision_r)
+    p_prime = p + p_err
+    r = pm.Dirichlet("real_ratios", num_exprimes * p_prime, observed=results_r)
 
     trace = pm.sample()
 #+end_src
@@ -108,7 +96,8 @@ filename
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-KLeE5y/figureGCXCRN.png]]
+[[file:/tmp/babel-p7HJWP/figureDUzveb.png]]
+
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
@@ -128,7 +117,10 @@ filename
 #+end_src
 #+attr_org: :width 500
 #+RESULTS:
-[[file:/tmp/babel-KLeE5y/figureEp8Kky.png]]
+[[file:/tmp/babel-p7HJWP/figureZTDWdD.png]]
+
+
+Odoxa ne spécifie pas le % de gens qui sont surs de leur choix, impossible de donner d'autre information.
 
 ** BVA 08.12
 :PROPERTIES:
@@ -137,8 +129,9 @@ filename
     :BASE: Certaines d'aller voter
 :END:
 
-#+begin_src python :session bva
+#+begin_src python :session
 num_exprimes = 894
+precision = 0.25
 resultats = {
     "Arthaud": .5,
     "Poutou": 1.5,
@@ -157,35 +150,44 @@ resultats = {
 assert sum(list(resultats.values())) == 100
 #+end_src
 
-#+begin_src python :session bva :async true
-with pm.Model() as bva:
+#+RESULTS:
+
+#+begin_src python :session :async true
+srng = np.random.default_rng()
+
+def simulate(intentions, errs):
+    r = srng.dirichlet(intentions)
+    return r + errs
+
+with pm.Model() as model:
     prior_intentions = np.array(
-        [2, 2, 10, 3, 3, 5, 5, 20, 15, 2, 15, 20, 1]
-    ) / 100
-
+        [1, 1.5, 2, 10, 1, 3, 6, 24, 19, 2.5, 12, 17, 1]
+    )
     results_r = np.array(list(resultats.values())) / 100
-    p = pm.Dirichlet("intentions", prior_intentions)  # Prior too vague?
-    r = pm.Dirichlet("real_ratios", num_exprimes * p, observed=results_r)
+    precision_r = precision / 100
 
-    trace = pm.sample()
+    intentions = pm.Dirichlet('intentions', prior_intentions)
+    errs = pm.Uniform("errs", -precision_r, precision_r, shape=(len(prior_intentions,)))
+    result = pm.Simulator('result', simulate, params=(intentions, errs), epsilon=0.01, observed=results_r)
+
+    trace = pm.sample_smc(kernel='ABC', chains=1, parallel=True, save_sim_data=True)
 #+end_src
 
 
 #+RESULTS:
 
-#+begin_src python :session  bva :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
 import arviz as az
 import matplotlib.pyplot as plt
-
-az.plot_trace(trace)
+az.plot_trace(trace[0])
 plt.savefig(filename, bbox_inches='tight')
 filename
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-KLeE5y/figurecfNdrS.png]]
+[[file:/tmp/babel-p7HJWP/figureTk25wp.png]]
 
-#+begin_src python :session bva :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
 fig = intentions.plot(
     intentions_r,
@@ -204,6 +206,69 @@ filename
 
 #+attr_org: :width 600
 #+RESULTS:
-[[file:/tmp/babel-KLeE5y/figurej68siq.png]]
+[[file:]]
 
 Il serait quand même judicieux de mettre les gens n'ayant pas exprimé d'opinion sur les graphes.
+
+** Sûrs de leur choix
+
+#+begin_src python :session :results silent
+import math
+
+certains_total = 71
+certains = {
+    "Mélenchon": 74,
+    "Hidalgo": 51,
+    "Jadot": 48,
+    "Macron": 73,
+    "Pécresse": 60,
+    "Zemmour": 65,
+    "Le Pen": 74,
+}
+
+# On fait l'hypothèse (assez bien vérifié quand on regarde les chiffres)
+resultats_certains = {}
+total = 0
+remaining = 0
+for i, c in enumerate(resultats):
+    try:
+        num_certains = trace['intentions'][:, i] * certains[c] / 100
+        resultats_certains[c] = num_certains
+        total += num_certains
+    except:
+        resultats_certains[c] = trace['intentions'][:, i]
+        total += trace['intentions'][:, i]
+
+for c in resultats:
+    resultats_certains[c] /= total
+#+end_src
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: v for k, v in resultats_certains.items()}
+fig = intentions.plot(
+    intentions_r,
+    colors,
+    "08/12/2021",
+    "BVA pour Orange et RTL",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Certains d'aller voter et sûrs de leur choix",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 500
+#+RESULTS:
+[[file:/tmp/babel-l2eJnd/figurey9MbqB.png]]
+
+** TODO Nouvelle représentation des indécis, etc :viz:
+    - Pour la présentation brute mettre les gens qui n'expriment pas d'intention de vote sur la courbe
+    - Avec les gens sûrs de leur choix mettre le % d'indécis en plus
+    - Pour mettre opinions brutes et certains de leur choix sur le meme graphe:
+      Superposer les intervalles, avec un rond creux pour les certains d'aller voter
+** TODO Pécresse dans les nouveaux sondages :edito:
+** TODO Pairwise comparisons :viz:
+** TODO Add rounding uncertainty :model:
