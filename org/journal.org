@@ -176,7 +176,7 @@ filename
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-OuSpkx/figurebnO2HM.png]]
+[[file:/tmp/babel-VWjkW3/figure0p2VLy.png]]
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
@@ -197,7 +197,7 @@ filename
 
 #+attr_org: :width 600
 #+RESULTS:
-[[file:/tmp/babel-OuSpkx/figureEn6ZK4.png]]
+[[file:/tmp/babel-VWjkW3/figurePTbhcD.png]]
 
 Il serait quand même judicieux de mettre les gens n'ayant pas exprimé d'opinion sur les graphes.
 
@@ -460,13 +460,14 @@ filename
 import imageio
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as grid_spec
 import scipy.stats as stats
 
 
 srng = np.random.default_rng(seed=0)
 
 def scatter_points(x):
-    return srng.normal(0,.01,len(x))
+    return 0.10 * (1-2*srng.random(len(x)))
 
 def scatter_random(x):
     y = scatter_points(x)
@@ -476,160 +477,146 @@ def scatter_random(x):
         distances = abs(m-n) + 100 * np.eye(100)
         min_idxs = np.where(distances == np.min(distances))[0]
         idx = srng.choice(min_idxs)
-        new_y = srng.normal(0,.01)
+        new_y = 0.10 * (1-2*srng.random())
         if abs(new_y) < 0.03:
             y[idx] = new_y
     return y
 
-candidates = ("Pécresse", "Le Pen")
-intentions_r = {"Pécresse": trace["intentions"][:,8], "Le Pen": trace["intentions"][:,11]}
-intentions_r = {"Pécresse": resultats_certains["Pécresse"], "Le Pen": resultats_certains["Le Pen"]}
-diff = intentions_r[candidates[1]]-intentions_r[candidates[0]]
-num_wins = int(100 * np.sum(diff>0) / len(diff))
+pairs = [("Mélenchon", "Jadot"), ("Le Pen", "Pécresse"), ("Zemmour", "Le Pen"), ("Macron", "Le Pen")]
+num_pairs = len(pairs)
 
-x = 100 * srng.choice(diff, 100)
-y = scatter_random(x)
+gs = grid_spec.GridSpec(num_pairs, 1)
+fig = plt.figure()
+axes = []
 
-condlist = [x>0, x<0]
-choicelist = [colors[candidates[1]], colors[candidates[0]]]
-colors_points = np.select(condlist, choicelist)
+for i, candidates in enumerate(pairs):
+    axes.append(fig.add_subplot(gs[i:i+1, 0:]))
 
+    diff = intentions_r[candidates[1]]-intentions_r[candidates[0]]
+    num_wins = int(100 * np.sum(diff>0) / len(diff))
+    x = 100 * srng.choice(diff, 100)
+    y = scatter_random(x)
 
-fig, ax  = plt.subplots()
-ax.scatter(x, y, c=colors_points, s=150, edgecolor="white", zorder=2)
-ax.axvline(0, color="black", lw=2)
-ax.axvline(5, ymin=0.1, color=colors[candidates[1]], lw=0.5)
-ax.axvline(-5, ymin=0.1, color=colors[candidates[0]], lw=0.5)
+    condlist = [x>0, x<0]
+    choicelist = [colors[candidates[1]], colors[candidates[0]]]
+    colors_points = np.select(condlist, choicelist)
 
-# transparent background
-rect = ax.patch
-rect.set_alpha(0)
+    # transparent background
+    rect = axes[-1].patch
+    rect.set_alpha(0)
 
-# remove borders, ticks and labels
-ax.set_yticklabels([])
-ax.set_ylabel("")
-ax.yaxis.set_ticks_position("none")
+    # remove borders, ticks and labels
+    axes[-1].set_yticklabels([])
+    axes[-1].set_ylabel("")
+    axes[-1].yaxis.set_ticks_position("none")
 
-ax.set_xticklabels([])
-ax.xaxis.set_ticks_position("none")
+    axes[-1].set_xticklabels([])
+    axes[-1].xaxis.set_ticks_position("none")
 
-spines = ["top", "right", "left", "bottom"]
-for s in spines:
-    ax.spines[s].set_visible(False)
+    spines = ["top", "right", "left", "bottom"]
+    for s in spines:
+        axes[-1].spines[s].set_visible(False)
 
-lim = 5 + max(abs(x))
+    axes[-1].scatter(x, y, c=colors_points, s=50, edgecolor="white", zorder=2)
+    axes[-1].axvline(0, color="black", lw=2)
+    axes[-1].axvline(5, ymin=0.1, color="lightgray", lw=0.5)
+    axes[-1].axvline(10, ymin=0.1, color="lightgray", lw=0.5)
+    axes[-1].axvline(-5, ymin=0.1, color="lightgray", lw=0.5)
+    axes[-1].axvline(-10, ymin=0.1, color="lightgray", lw=0.5)
 
-ax.text(
-    lim,
-    0.0,
-    f"{candidates[1]} en tête",
-    fontweight="normal",
-    fontname="Futura PT",
-    va="center",
-    ha="center",
-    fontsize=15,
-    color="black",
-)
-ax.text(
-    lim,
-    -0.006,
-    f"{num_wins} sur 100",
-    fontweight="bold",
-    fontname="Futura PT",
-    va="center",
-    ha="center",
-    fontsize=30,
-    color=colors[candidates[1]],
-)
+    lim_left = min(min(x) - 1, -1)
+    lim_right = max(1 + max(x), 1)
 
-ax.text(
-    -lim,
-    0.0,
-    f"{candidates[0]} en tête",
-    fontweight="normal",
-    fontname="Futura PT",
-    va="center",
-    ha="center",
-    fontsize=15,
-    color="black",
-)
-ax.text(
-    -lim,
-    -0.006,
-    f"{100-num_wins} sur 100",
-    fontweight="bold",
-    fontname="Futura PT",
-    va="center",
-    ha="center",
-    fontsize=30,
-    color=colors[candidates[0]],
-)
+    axes[-1].text(
+        lim_right,
+        0.0,
+        f"{candidates[1]} en tête",
+        fontweight="normal",
+        fontname="Futura PT",
+        va="center",
+        ha="left",
+        fontsize=15,
+        color=colors[candidates[1]],
+    )
+    axes[-1].text(
+        lim_right,
+        -0.1,
+        f"{num_wins} sur 100",
+        fontweight="bold",
+        fontname="Futura PT",
+        va="center",
+        ha="left",
+        fontsize=20,
+        color=colors[candidates[1]],
+    )
+    axes[-1].text(
+        lim_left,
+        0.0,
+        f"{candidates[0]} en tête",
+        fontweight="bold",
+        fontname="Futura PT",
+        va="center",
+        ha="right",
+        fontsize=15,
+        color=colors[candidates[0]],
+    )
+    axes[-1].text(
+        lim_left,
+        -0.1,
+        f"{100-num_wins} sur 100",
+        fontweight="bold",
+        fontname="Futura PT",
+        va="center",
+        ha="right",
+        fontsize=20,
+        color=colors[candidates[0]],
+    )
 
-ax.text(
-    0,
-    -0.04,
-    f"Égalité",
-    fontweight="light",
-    fontname="Futura PT",
-    va="top",
-    ha="center",
-    fontsize=16,
-    color="black",
-)
-ax.text(
-    5,
-    -0.04,
-    f"+5%",
-    fontweight="light",
-    fontname="Futura PT",
-    va="bottom",
-    ha="center",
-    fontsize=20,
-    color=colors[candidates[1]],
-)
-ax.text(
-    -5,
-    -0.04,
-    f"+5%",
-    fontweight="light",
-    fontname="Futura PT",
-    va="bottom",
-    ha="center",
-    fontsize=20,
-    color=colors[candidates[0]],
-)
-fig.text(
-    0,
-    -0.04,
-    "Tracé avec soin par @pollsposition",
-    ha="right",
-    va="bottom",
-    fontsize=10,
-    fontweight="normal",
-    fontname="Futura PT",
-    color="darkgray",
-)
-ax.set_ylim(-0.04, 0.04)
+    """
+    axes[-1].text(
+        0,
+        -0.04,
+        f"Égalité",
+        fontweight="light",
+        fontname="Futura PT",
+        va="top",
+        ha="center",
+        fontsize=16,
+        color="black",
+    )
+    axes[-1].text(
+        5,
+        -0.04,
+        f"+5%",
+        fontweight="light",
+        fontname="Futura PT",
+        va="bottom",
+        ha="center",
+        fontsize=20,
+        color=colors[candidates[1]],
+    )
+    axes[-1].text(
+        -5,
+        -0.04,
+        f"+5%",
+        fontweight="light",
+        fontname="Futura PT",
+        va="bottom",
+        ha="center",
+        fontsize=20,
+        color=colors[candidates[0]],
+    )
+    """
+    axes[-1].set_ylim(-0.20, 0.20)
+    axes[-1].set_xlim(-15, 10)
 
 
-ax1 = fig.add_axes([-0.3, 0.95, 0.15, 0.15])
-im = imageio.imread("~/org/roam/images/logo.png")
-ax1.imshow(im)
-ax1.axis("off")
+#ax1 = fig.add_axes([-0.15, 0.95, 0.15, 0.15])
+#im = imageio.imread("~/org/roam/images/logo.png")
+#ax1.imshow(im)
+#ax1.axis("off")
 
-fig.text(
-    -0.15, 1., f"Différentiel {candidates[1]}-{candidates[0]} au premier tour", fontsize=25, fontweight="bold", fontname="Futura PT",  ha='left'
-)
-fig.text(
-    -0.15,
-    0.95,
-    f"08/12/2021 | BVA pour Orange et RTL | N=894 | Certains d'aller voter et sûrs de leur choix",
-    fontsize=13,
-    fontweight="normal",
-    fontname="Futura PT",
-    color="darkgray",
-)
-
+gs.update(hspace=-0.1)
 
 plt.savefig(filename, dpi=100, bbox_inches="tight")
 filename
@@ -637,4 +624,9 @@ filename
 
 #+attr_org: :width 800
 #+RESULTS:
-[[file:/tmp/babel-OuSpkx/figureR0HoYQ.png]]
+[[file:/tmp/babel-VWjkW3/figureARmrYu.png]]
+
+**** TODO Ajouter légende sur le graphe
+**** TODO Better layout management
+**** TODO Show several candidates at once
+**** TODO Compute location of vertical lines automatically
