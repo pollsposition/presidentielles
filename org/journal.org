@@ -176,10 +176,10 @@ filename
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-pSa1ZR/figureOix7Ju.png]]
+[[file:/tmp/babel-OuSpkx/figurebnO2HM.png]]
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
-intentions_r = {k: trace[0]['intentions'][:,i] for i,k in enumerate(resultats.keys())}
+intentions_r = {k: trace['intentions'][:,i] for i,k in enumerate(resultats.keys())}
 fig = src.intentions.plot(
     intentions_r,
     colors,
@@ -197,7 +197,7 @@ filename
 
 #+attr_org: :width 600
 #+RESULTS:
-[[file:/tmp/babel-pSa1ZR/figurebUyJZp.png]]
+[[file:/tmp/babel-OuSpkx/figureEn6ZK4.png]]
 
 Il serait quand même judicieux de mettre les gens n'ayant pas exprimé d'opinion sur les graphes.
 
@@ -253,7 +253,7 @@ filename
 
 #+attr_org: :width 500
 #+RESULTS:
-[[file:/tmp/babel-l2eJnd/figurey9MbqB.png]]
+[[file:/tmp/babel-OuSpkx/figurehbOufB.png]]
 
 *** Tenir compte des erreurs d'arrondi pour les incertitudes :model:
 
@@ -446,7 +446,7 @@ filename
 
 #+attr_org: :width 500
 #+RESULTS:
-[[file:/tmp/babel-OuSpkx/figurevmQ4Y8.png]]
+[[file:/tmp/babel-OuSpkx/figureruPQ86.png]]
 
 ** TODO Nouvelle représentation des indécis, etc :viz:
     - Pour la présentation brute mettre les gens qui n'expriment pas d'intention de vote sur la courbe
@@ -462,13 +462,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 
+
+srng = np.random.default_rng(seed=0)
+
+def scatter_points(x):
+    return srng.normal(0,.01,len(x))
+
+def scatter_random(x):
+    y = scatter_points(x)
+    for _ in range(10_000):
+        z = np.array([complex(x[i], y[i]) for i in range(100)])
+        m, n = np.meshgrid(z, z)
+        distances = abs(m-n) + 100 * np.eye(100)
+        min_idxs = np.where(distances == np.min(distances))[0]
+        idx = srng.choice(min_idxs)
+        new_y = srng.normal(0,.01)
+        if abs(new_y) < 0.03:
+            y[idx] = new_y
+    return y
+
 candidates = ("Pécresse", "Le Pen")
-intentions = {"Pécresse": trace["intentions"][:,0,8], "Le Pen": trace["intentions"][:,0,11]}
-diff = intentions[candidates[1]]-intentions[candidates[0]]
-num_wins = int(100 * np.sum(diff>0) / len(p))
+intentions_r = {"Pécresse": trace["intentions"][:,8], "Le Pen": trace["intentions"][:,11]}
+intentions_r = {"Pécresse": resultats_certains["Pécresse"], "Le Pen": resultats_certains["Le Pen"]}
+diff = intentions_r[candidates[1]]-intentions_r[candidates[0]]
+num_wins = int(100 * np.sum(diff>0) / len(diff))
 
 x = 100 * srng.choice(diff, 100)
-y = srng.normal(0,.01,len(x))
+y = scatter_random(x)
 
 condlist = [x>0, x<0]
 choicelist = [colors[candidates[1]], colors[candidates[0]]]
@@ -476,7 +496,7 @@ colors_points = np.select(condlist, choicelist)
 
 
 fig, ax  = plt.subplots()
-ax.scatter(x, y, c=colors_points, s=200, edgecolor="white", zorder=2)
+ax.scatter(x, y, c=colors_points, s=150, edgecolor="white", zorder=2)
 ax.axvline(0, color="black", lw=2)
 ax.axvline(5, ymin=0.1, color=colors[candidates[1]], lw=0.5)
 ax.axvline(-5, ymin=0.1, color=colors[candidates[0]], lw=0.5)
@@ -579,7 +599,7 @@ ax.text(
     color=colors[candidates[0]],
 )
 fig.text(
-    0.93,
+    0,
     -0.04,
     "Tracé avec soin par @pollsposition",
     ha="right",
@@ -589,24 +609,32 @@ fig.text(
     fontname="Futura PT",
     color="darkgray",
 )
-
 ax.set_ylim(-0.04, 0.04)
 
 
-ax1 = fig.add_axes([-0.3, 0.9, 0.2, 0.2])
+ax1 = fig.add_axes([-0.3, 0.95, 0.15, 0.15])
 im = imageio.imread("~/org/roam/images/logo.png")
 ax1.imshow(im)
 ax1.axis("off")
 
 fig.text(
-    -0.1, 1., f"Différentiel {candidates[1]}-{candidates[0]} au premier tour", fontsize=25, fontweight="bold", fontname="Futura PT",  ha='left'
+    -0.15, 1., f"Différentiel {candidates[1]}-{candidates[0]} au premier tour", fontsize=25, fontweight="bold", fontname="Futura PT",  ha='left'
+)
+fig.text(
+    -0.15,
+    0.95,
+    f"08/12/2021 | BVA pour Orange et RTL | N=894 | Certains d'aller voter et sûrs de leur choix",
+    fontsize=13,
+    fontweight="normal",
+    fontname="Futura PT",
+    color="darkgray",
 )
 
 
-plt.savefig(filename, bbox_inches="tight")
+plt.savefig(filename, dpi=100, bbox_inches="tight")
 filename
 #+end_src
 
 #+attr_org: :width 800
 #+RESULTS:
-[[file:/tmp/babel-o4KxvM/figurerQkzwf.png]]
+[[file:/tmp/babel-OuSpkx/figureR0HoYQ.png]]
