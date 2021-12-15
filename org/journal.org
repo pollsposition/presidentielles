@@ -3,16 +3,14 @@
 #+STARTUP: hideblocks
 
 #+PROPERTY: header-args :eval never-export :exports both :results output drawer replace
-#+PROPERTY: header-args+ :session survey-book-models :comments yes
+#+PROPERTY: header-args+ :session journal :comments yes
 
 Dans ce document nous recensons les analyses que nous avons pu faire au jour le jours.
 
 #+description: Load the virtual environment
-#+begin_src elisp :session :exports none
+#+begin_src elisp :session :exports none :results silent
 (pyvenv-workon 'polls)
 #+end_src
-
-#+RESULTS:
 
 #+description: Import needed libraries
 #+begin_src python :session :results silent :exports none
@@ -131,7 +129,7 @@ Odoxa ne spécifie pas le % de gens qui sont surs de leur choix, impossible de d
     :BASE: Certaines d'aller voter
 :END:
 
-#+begin_src python :session
+#+begin_src python :session :results silent
 num_exprimes = 894
 precision = 0.25
 resultats = {
@@ -153,6 +151,8 @@ assert sum(list(resultats.values())) == 100
 #+end_src
 
 #+RESULTS:
+:results:
+:end:
 
 #+begin_src python :session :async true
 with pm.Model() as bva:
@@ -366,18 +366,33 @@ with pm.Model() as multinomial:
 #+end_src
 
 #+RESULTS:
-: /tmp/babel-o4KxvM/python-YhPue2
+:results:
+/tmp/py26li0i:14: FutureWarning: In v4.0, pm.sample will return an `arviz.InferenceData` object instead of a `MultiTrace` by default. You can pass return_inferencedata=True or return_inferencedata=False to be safe and silence this warning.
+Multiprocess sampling (4 chains in 4 jobs)
+CompoundStep
+>NUTS: [intentions]
+>Metropolis: [respondants]
+Sampling 4 chains for 1_000 tune and 1_000 draw iterations (4_000 + 4_000 draws total) took 2 seconds.
+There were 7 divergences after tuning. Increase `target_accept` or reparameterize.
+There were 13 divergences after tuning. Increase `target_accept` or reparameterize.
+The rhat statistic is larger than 1.4 for some parameters. The sampler did not converge.
+The estimated number of effective samples is smaller than 200 for some parameters.
+:end:
 
 #+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
 import arviz as az
 import matplotlib.pyplot as plt
-az.plot_trace(trace)
-plt.savefig(filename, bbox_inches='tight')
-filename
+
+with multinomial:
+    az.plot_trace(trace)
+    plt.savefig(filename, bbox_inches='tight')
+print(filename)
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-OuSpkx/figure8HnRPR.png]]
+:results:
+[[file:/tmp/babel-B798aL/figure3RFaIr.png]]
+:end:
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
@@ -393,12 +408,12 @@ fig = src.intentions.plot(
 )
 plt.tight_layout()
 plt.savefig(filename, dpi=600, bbox_inches="tight")
-filename
+print(filename)
 #+end_src
 
 #+attr_org: :width 500
 #+RESULTS:
-[[file:/tmp/babel-OuSpkx/figureFMPKS0.png]]
+[[/tmp/babel-B798aL/figureFoJKh1.png]]
 
 On voit que les intervalles de confiance sont légèrement élargis. /Supposons maintenant que les résultats sont données à plus ou moins un point près!
 
@@ -450,7 +465,10 @@ filename
 
 #+attr_org: :width 500
 #+RESULTS:
-[[file:/tmp/babel-OuSpkx/figureruPQ86.png]]
+:results:
+[[file:/tmp/babel-B798aL/python-buuMGu:13: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  plt.tight_layout()]]
+:end:
 
 ** TODO Nouvelle représentation des indécis, etc :viz:
     - Pour la présentation brute mettre les gens qui n'expriment pas d'intention de vote sur la courbe
@@ -467,7 +485,7 @@ Randomly scattering points does not give great results. can probably improve the
 2. For each simulation, find the point with the closest x value. Set to occupied.
 3. Then only display the occupied circles.
 
-Also, the exact
+[2021-12-15 Wed]
 
 #+begin_src python :session :results silent
 from math import cos, sin, floor, sqrt, pi, ceil
@@ -556,7 +574,201 @@ def generate_blue_noise(shape, radius, k=32, seed=None):
     return np.array([p for p in grid if p is not None])
 #+end_src
 
-#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+from pygifsicle import optimize
+import imageio
+
+srng = np.random.default_rng()
+a = generate_blue_noise((30, 3), 0.2)
+a[:, 0] = a[:, 0] - 15
+a[:, 1] = a[:, 1] + 0.1
+diff = intentions_r["Le Pen"] - intentions_r["Zemmour"]
+num_wins = int(100 * np.sum(diff > 0) / len(diff))
+
+x = 100 * srng.choice(diff, 100)
+condlist = [x > 0, x < 0]
+choicelist = [colors["Le Pen"], colors["Zemmour"]]
+colors_points = np.select(condlist, choicelist)
+
+positions = []
+for x_i in x:
+    idx = np.abs(a[:, 0] - x_i).argmin()  # it needs to stay on the same side
+    positions.append(a[idx])
+    a = np.delete(a, idx, 0)
+
+x_i = np.array([p[0] for p in positions])
+y_i = np.array([p[1] for p in positions])
+
+filenames = []
+for i in range(1, len(x_i)):
+    plt.clf()
+    filename = f"intentions-paiwise-{i}.png"
+    fig, ax = plt.subplots()
+
+    s = (ax.get_window_extent().width / 25 * 72.0 / fig.dpi) ** 2
+    ax.scatter(x_i[:i], y_i[:i], s=s, edgecolor="white", c=colors_points[:i])
+    ax.axvline(0, color="black", lw=2)
+    ax.axvline(5, ymin=0.1, color=colors["Le Pen"], lw=0.5)
+    # ax.axvline(10, ymin=0.1, color="lightgray", lw=0.5)
+    ax.axvline(-5, ymin=0.1, color=colors["Zemmour"], lw=0.5)
+    # ax.axvline(-10, ymin=0.1, color="lightgray", lw=0.5)
+    ax.set_xlim(-10, 10)
+    ax.set_ylim(-0.3, 3.2)
+
+    # transparent background
+    rect = ax.patch
+    rect.set_alpha(0)
+
+    # remove borders, ticks and labels
+    ax.set_yticklabels([])
+    ax.set_ylabel("")
+    ax.yaxis.set_ticks_position("none")
+
+    ax.set_xticklabels([])
+    ax.xaxis.set_ticks_position("none")
+
+    spines = ["top", "right", "left", "bottom"]
+    for s in spines:
+        ax.spines[s].set_visible(False)
+
+    num_wins = np.ceil(100 * np.sum(x_i > 0) / len(x_i))
+
+    ax.text(
+        9,
+        1.7,
+        f"Le Pen en tête",
+        fontweight="normal",
+        fontname="Futura PT",
+        va="center",
+        ha="left",
+        fontsize=15,
+        color=colors["Le Pen"],
+    )
+    ax.text(
+        9,
+        1.5,
+        f"{num_wins:.0f} sur 100",
+        fontweight="bold",
+        fontname="Futura PT",
+        va="center",
+        ha="left",
+        fontsize=20,
+        color=colors["Le Pen"],
+    )
+
+    ax.text(
+        -9,
+        1.7,
+        f"Zemmour en tête",
+        fontweight="normal",
+        fontname="Futura PT",
+        va="center",
+        ha="right",
+        fontsize=15,
+        color=colors["Zemmour"],
+    )
+    ax.text(
+        -9,
+        1.5,
+        f"{100-num_wins:.0f} sur 100",
+        fontweight="bold",
+        fontname="Futura PT",
+        va="center",
+        ha="right",
+        fontsize=20,
+        color=colors["Zemmour"],
+    )
+
+    ax.text(
+        0,
+        -0.31,
+        f"Égalité",
+        fontweight="light",
+        fontname="Futura PT",
+        va="top",
+        ha="center",
+        fontsize=16,
+        color="black",
+    )
+    ax.text(
+        5,
+        -0.05,
+        f"+5%",
+        fontweight="light",
+        fontname="Futura PT",
+        va="top",
+        ha="center",
+        fontsize=12,
+        color=colors["Le Pen"],
+    )
+    ax.text(
+        -5,
+        -0.05,
+        f"+5%\nd'avance",
+        fontweight="light",
+        fontname="Futura PT",
+        va="top",
+        ha="center",
+        fontsize=12,
+        color=colors["Zemmour"],
+    )
+
+    fig.text(
+        0.5,
+        1.06,
+        "Différence d'intentions de vote au 1er tour",
+        fontname="Futura PT",
+        fontweight="bold",
+        fontsize=20,
+        ha="center",
+    )
+    fig.text(
+        0.5,
+        0.95,
+        "Nous simulons le premier tour de l'élection 10000 fois et calculons\nla différence entre le nombre d'intention de votes obtenues pour les deux candidats.\nChaque point représente le résultat d'une simulation.",
+        fontname="Futura PT",
+        fontweight="normal",
+        fontsize=12,
+        ha="center",
+        linespacing=1,
+    )
+
+    fig.text(
+        1,
+        0,
+        "Tracé avec soin par @pollsposition",
+        ha="right",
+        va="bottom",
+        fontsize=10,
+        fontweight="normal",
+        fontname="Futura PT",
+        color="darkgray",
+    )
+
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "optimized.gif")  # For creating a new one
+
+import os
+
+for filename in set(filenames):
+    os.remove(filename)
+
+print(filename)
+#+end_src
+
+#+RESULTS:
+:results:
+[[file:intentions-paiwise-52.png]]
+:end:
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
 import imageio
 import numpy as np
 import matplotlib.pyplot as plt
