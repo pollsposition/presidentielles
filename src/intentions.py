@@ -196,12 +196,12 @@ def plot(
     return fig
 
 
-def plot_pair(intentions, colors, c1, c2, title=""):
+def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100):
     """Plot pairwise difference in voting intentions."""
 
-    srng = np.random.default_rng()
+    srng = np.random.default_rng(0)
     diff = intentions[c1] - intentions[c2]
-    x = 100 * srng.choice(diff, 100)
+    x = 100 * srng.choice(diff, num_points)
 
     # Attribute candidate color to each posterior sample
     condlist = [x > 0, x < 0]
@@ -210,11 +210,14 @@ def plot_pair(intentions, colors, c1, c2, title=""):
 
     # Attribute position to each posterior sample
     limit = np.ceil(100 * np.max(abs(diff)))
-    print(limit)
-    a = generate_blue_noise((2 * limit, 3), 0.2)
+
+    a = generate_blue_noise((2 * limit, 3), 0.2, seed=0)
     a[:, 0] = a[:, 0] - limit
     a[:, 1] = a[:, 1] + 0.1
-    num_wins = int(100 * np.sum(diff > 0) / len(diff))
+
+    if scores is None:
+        num_wins = int(100 * np.sum(diff > 0) / len(diff))
+        scores = {c1: f"{num_wins:.0f} sur 100", c2: f"{100-num_wins:.0f} sur 100"}
 
     positions = []
     for x_i in x:
@@ -228,7 +231,7 @@ def plot_pair(intentions, colors, c1, c2, title=""):
     fig, ax = plt.subplots()
 
     # Plot the samples
-    s = (ax.get_window_extent().width / 25 * 72.0 / fig.dpi) ** 2
+    s = (ax.get_window_extent().width / 28 * 72.0 / fig.dpi) ** 2
     ax.scatter(x_i, y_i, s=s, edgecolor="white", c=colors_points)
 
     # Plot the vertical line that marks equality
@@ -284,7 +287,7 @@ def plot_pair(intentions, colors, c1, c2, title=""):
     ax.text(
         limit + 3,
         1.5,
-        f"{num_wins:.0f} sur 100",
+        scores[c1],
         fontweight="bold",
         fontname="Futura PT",
         va="center",
@@ -307,7 +310,7 @@ def plot_pair(intentions, colors, c1, c2, title=""):
     ax.text(
         -limit - 3,
         1.5,
-        f"{100-num_wins:.0f} sur 100",
+        scores[c2],
         fontweight="bold",
         fontname="Futura PT",
         va="center",
