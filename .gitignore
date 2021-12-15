@@ -5,3 +5,4 @@ __pychache__
 *.egg-info
 /tags
 __pycache__
+*.gif
