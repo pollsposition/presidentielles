@@ -270,7 +270,8 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
     spines = ["top", "right", "left", "bottom"]
     for s in spines:
         ax.spines[s].set_visible(False)
-num_wins = np.ceil(100 * np.sum(x_i > 0) / len(x_i))
+
+    num_wins = np.ceil(100 * np.sum(x_i > 0) / len(x_i))
 
     ax.text(
         limit + 3,
@@ -443,20 +444,27 @@ num_wins = np.ceil(100 * np.sum(x_i > 0) / len(x_i))
     )
 
     # Hackish way to get a legend
-    ax.scatter([], [], c=colors[c1], s=s, edgecolor="white", label=f"{c1} en tête")
+    s = (ax.get_window_extent().width / 28 * 72.0 / fig.dpi) ** 2
     ax.scatter([], [], c=colors[c2], s=s, edgecolor="white", label=f"{c2} en tête")
-    plt.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.05))
+    ax.scatter([], [], c=colors[c1], s=s, edgecolor="white", label=f"{c1} en tête")
+    plt.legend(
+        frameon=False,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.1),
+        ncol=2,
+        prop={"family": "Futura PT"},
+    )
 
     fig.text(
         1,
-        0,
+        -0.05,
         "Tracé avec soin par @pollsposition",
         ha="right",
-        va="bottom",
+        va="center",
         fontsize=10,
         fontweight="normal",
         fontname="Futura PT",
-        color="darkgray",
+        color="lightgray",
     )
     return fig
 

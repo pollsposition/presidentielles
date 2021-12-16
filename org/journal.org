@@ -532,7 +532,6 @@ with pm.Model() as multinomial:
 #+end_src
 
 #+RESULTS:
-: /tmp/babel-VGtxVt/python-zRKNJI
 
 #+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
 import arviz as az
@@ -545,7 +544,7 @@ filename
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-VGtxVt/figuremRCaXu.png]]
+[[file:/tmp/babel-B798aL/figurek2eqJC.png]]
 
 #+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
 intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
@@ -566,7 +565,23 @@ filename
 
 #+attr_org: :width 500
 #+RESULTS:
-[[file:/tmp/babel-VGtxVt/figureCTn9Qd.png]]
+[[file:/tmp/babel-B798aL/figure9jWzjU.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Le Pen",
+    "Pécresse",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-B798aL/veCirZ.png]]
+
 
 #+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
 import matplotlib.pyplot as plt
@@ -609,7 +624,7 @@ for filename in set(filenames):
 #+end_src
 
 #+RESULTS:
-[[file:]]
+[[file:/tmp/babel-B798aL/python-xgnGdG]]
 
 #+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
 import matplotlib.pyplot as plt
