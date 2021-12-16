@@ -270,8 +270,7 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
     spines = ["top", "right", "left", "bottom"]
     for s in spines:
         ax.spines[s].set_visible(False)
-
-    num_wins = np.ceil(100 * np.sum(x_i > 0) / len(x_i))
+num_wins = np.ceil(100 * np.sum(x_i > 0) / len(x_i))
 
     ax.text(
         limit + 3,
@@ -442,6 +441,11 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
         ha="center",
         linespacing=1,
     )
+
+    # Hackish way to get a legend
+    ax.scatter([], [], c=colors[c1], s=s, edgecolor="white", label=f"{c1} en tête")
+    ax.scatter([], [], c=colors[c2], s=s, edgecolor="white", label=f"{c2} en tête")
+    plt.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.05))
 
     fig.text(
         1,
