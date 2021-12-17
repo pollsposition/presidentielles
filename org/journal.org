@@ -668,3 +668,363 @@ for filename in set(filenames):
 
 #+RESULTS:
 [[file:]]
+
+** Opinionway 15.12
+:PROPERTIES:
+    :BEGIN: 13/12/2021
+    :END: 15/12/2021
+    :BASE: Inscrits sur les listes électorales
+:END:
+
+#+begin_src python :session :results silent
+num_exprimes = int(1470 * (1-0.16))
+precision = 1.
+resultats = {
+    "Arthaud": 1,
+    "Poutou": 1,
+    "Roussel": 3,
+    "Mélenchon": 9,
+    "Montebourg": 2,
+    "Hidalgo": 4,
+    "Jadot": 8,
+    "Macron": 24,
+    "Pécresse": 17,
+    "Dupont-Aignan": 2,
+    "Zemmour": 12,
+    "Le Pen": 16,
+    "Lassalle": 1,
+    #"Philippot": 0,
+    #"Asselineau": 0,
+}
+assert sum(list(resultats.values())) == 100
+#+end_src
+
+#+begin_src python :session :async true
+results_r = np.array(list(resultats.values())) / 100
+precision_r = precision / 100
+
+with pm.Model() as multinomial:
+    prior_intentions = np.array(
+        [1, 1, 3, 9, 2, 4, 8, 24, 17, 2, 12, 16, 1]
+    ) * 0.1
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    n = pm.Multinomial("respondants", num_exprimes, p, shape=(1, len(prior_intentions)))
+    r = n / num_exprimes
+    r_obs = pm.Uniform('observed', r-precision_r, r+precision_r, observed=results_r)
+
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+
+with multinomial:
+    az.plot_trace(trace)
+    plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/figuresvVTFe.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "15/12/2021",
+    "Opinionway pour Les Echos et Radio Classique",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Inscrits sur les listes électorales",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 500
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/figure2M59Zh.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Le Pen",
+    "Pécresse",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/vAkUGN.png]]
+
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Jadot",
+    "Mélenchon",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/Fnmff2.png]]
+
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Zemmour",
+    "Mélenchon",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/U9UISJ.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Hidalgo",
+    "Roussel",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/y8Aq8J.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Le Pen"
+challenger = "Pécresse"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "lepenpecresse.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Jadot"
+challenger = "Mélenchon"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "jadotmelenchon.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Zemmour"
+challenger = "Mélenchon"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "zemmourmelenchon.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Hidalgo"
+challenger = "Roussel"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "hidalgoroussel.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/python-u2NVUf]]
+
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Montebourg"
+challenger = "Roussel"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "montebourgroussel.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-SJxqMQ/python-q6atyq]]
