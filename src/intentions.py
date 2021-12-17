@@ -196,7 +196,16 @@ def plot(
     return fig
 
 
-def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100):
+def plot_pair(
+    intentions,
+    colors,
+    c1,
+    c2,
+    scores=None,
+    title="Différence d'intentions de vote au 1er tour",
+    ticks=None,
+    num_points=100,
+):
     """Plot pairwise difference in voting intentions."""
     srng = np.random.default_rng(0)
     diff = intentions[c1] - intentions[c2]
@@ -237,19 +246,18 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
     ax.axvline(0, color="black", lw=2)
 
     # And now plot the % ticks
-    ax.axvline(5, ymin=0.1, color=colors[c1], lw=0.5)
-    ax.axvline(-5, ymin=0.1, color=colors[c2], lw=0.5)
+    if not ticks:
+        by_five = int(limit // 5)
+        by_ten = int(limit // 10)
 
-    m = limit // 5
-    if m >= 2:
-        ax.axvline(10, ymin=0.1, color=colors[c1], lw=0.5)
-        ax.axvline(-10, ymin=0.1, color=colors[c2], lw=0.5)
-        if m >= 3:
-            ax.axvline(15, ymin=0.1, color=colors[c1], lw=0.5)
-            ax.axvline(-15, ymin=0.1, color=colors[c2], lw=0.5)
-            if m >= 4:
-                ax.axvline(20, ymin=0.1, color=colors[c1], lw=0.5)
-                ax.axvline(-20, ymin=0.1, color=colors[c2], lw=0.5)
+        if by_ten <= 1:
+            ticks = [5 * m for m in range(1, by_five)]
+        else:
+            ticks = [10 * t for t in range(1, by_ten)]
+
+    for t in ticks:
+        ax.axvline(t, ymin=0.1, color=colors[c1], lw=0.5)
+        ax.axvline(-t, ymin=0.1, color=colors[c2], lw=0.5)
 
     ax.set_xlim(-limit - 3, limit + 3)
     ax.set_ylim(-0.3, 3.2)
@@ -329,10 +337,11 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
         fontsize=16,
         color="black",
     )
+
     ax.text(
-        5,
+        ticks[-1],
         -0.05,
-        f"+5%",
+        f"+{ticks[-1]}%\nd'avance",
         fontweight="light",
         fontname="Futura PT",
         va="top",
@@ -341,9 +350,9 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
         color=colors[c1],
     )
     ax.text(
-        -5,
+        -ticks[-1],
         -0.05,
-        f"+5%\nd'avance",
+        f"+{ticks[-1]}%\nd'avance",
         fontweight="light",
         fontname="Futura PT",
         va="top",
@@ -351,12 +360,12 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
         fontsize=10,
         color=colors[c2],
     )
-    m = limit // 5
-    if m >= 2:
+
+    for t in ticks:
         ax.text(
-            10,
+            t,
             -0.05,
-            f"+10%",
+            f"+{t}%",
             fontweight="light",
             fontname="Futura PT",
             va="top",
@@ -365,9 +374,9 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
             color=colors[c1],
         )
         ax.text(
-            -10,
+            -t,
             -0.05,
-            f"+10%",
+            f"+{t}%",
             fontweight="light",
             fontname="Futura PT",
             va="top",
@@ -375,57 +384,11 @@ def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100)
             fontsize=10,
             color=colors[c2],
         )
-        if m >= 3:
-            ax.text(
-                15,
-                -0.05,
-                f"+15%",
-                fontweight="light",
-                fontname="Futura PT",
-                va="top",
-                ha="center",
-                fontsize=10,
-                color=colors[c1],
-            )
-            ax.text(
-                -15,
-                -0.05,
-                f"+15%",
-                fontweight="light",
-                fontname="Futura PT",
-                va="top",
-                ha="center",
-                fontsize=10,
-                color=colors[c2],
-            )
-            if m >= 4:
-                ax.text(
-                    20,
-                    -0.05,
-                    f"+20%",
-                    fontweight="light",
-                    fontname="Futura PT",
-                    va="top",
-                    ha="center",
-                    fontsize=10,
-                    color=colors[c1],
-                )
-                ax.text(
-                    -20,
-                    -0.05,
-                    f"+20%",
-                    fontweight="light",
-                    fontname="Futura PT",
-                    va="top",
-                    ha="center",
-                    fontsize=10,
-                    color=colors[c2],
-                )
 
     fig.text(
         0.5,
         1.06,
-        "Différence d'intentions de vote au 1er tour",
+        f"{title}",
         fontname="Futura PT",
         fontweight="bold",
         fontsize=20,
