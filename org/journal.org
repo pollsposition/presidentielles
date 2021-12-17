@@ -676,6 +676,8 @@ for filename in set(filenames):
     :BASE: Inscrits sur les listes électorales
 :END:
 
+*** Premier tour
+
 #+begin_src python :session :results silent
 num_exprimes = int(1470 * (1-0.16))
 precision = 1.
@@ -1028,3 +1030,122 @@ for filename in set(filenames):
 
 #+RESULTS:
 [[file:/tmp/babel-SJxqMQ/python-q6atyq]]
+
+*** Second tour
+
+#+begin_src python :session :results silent
+nspp = 40
+num_exprimes = int(1470 * (1-nspp/100))
+precision = 1.
+resultats = {
+    "Macron": 54,
+    "Pécresse": 46,
+}
+assert sum(list(resultats.values())) == 100
+#+end_src
+
+#+begin_src python :session :async true
+results_r = np.array(list(resultats.values())) / 100
+precision_r = precision / 100
+with pm.Model() as multinomial:
+    prior_intentions = np.array(
+        [50, 50]
+    ) * 0.1
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    r_obs = pm.Dirichlet("respondants", num_exprimes * p, observed=results_r)
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+
+with multinomial:
+    az.plot_trace(trace)
+    plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+attr_org: :width 700
+#+RESULTS:
+[[file:/tmp/babel-4wR0Ij/figureWCEwG9.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+intentions_decided_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot_pair(
+    intentions_decided_r,
+    colors,
+    "Macron",
+    "Pécresse",
+    title="Différence d'intentions de vote au 2nd tour",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-4wR0Ij/dl5xun.png]]
+
+
+Ok mais il y a 40% d'indécis! Que se passe-t-il si on les réparti aléatoirement?
+
+#+begin_src python :async true :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+num_indecis = 1470 * nspp / 100
+
+rng = np.random.default_rng()
+transition_i = rng.dirichlet(np.ones(2), size=4000).T
+
+intentions = {
+    c: num_exprimes * intentions_decided_r[c] for c in resultats
+}
+intentions_values = np.stack(intentions.values())
+intentions_randomized = intentions_values + num_indecis * transition_i
+intentions_r = {k: intentions_randomized[i]/1470 for i,k in enumerate(resultats.keys())}
+
+reference = "Macron"
+challenger = "Pécresse"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        title="Si tous les indécis choisissaient au hasard",
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "secontourhalfrandomized.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-4wR0Ij/python-ALLVQT]]
+
+**** TODO Fix that annoying initializiation issue in PyMC3
