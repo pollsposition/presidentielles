@@ -1,2 +1,6 @@
 #+TITLE: Pollsposition
 #+SUBTITLE: Bayesian statistics and French politics
+#+STARTUP: hideblocks show2levels
+
+
+* Time evolving coefficients

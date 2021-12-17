@@ -198,7 +198,6 @@ def plot(
 
 def plot_pair(intentions, colors, c1, c2, scores=None, title="", num_points=100):
     """Plot pairwise difference in voting intentions."""
-
     srng = np.random.default_rng(0)
     diff = intentions[c1] - intentions[c2]
     x = 100 * srng.choice(diff, num_points)

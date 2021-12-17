@@ -1,6 +1,6 @@
 #+TITLE: Présidentielles 2022
 #+SUBTITLE: Cahier de laboratoire
-#+STARTUP: hideblocks
+#+STARTUP: hideblocks show2levels
 
 #+PROPERTY: header-args :eval never-export
 #+PROPERTY: header-args+ :session journal :comments yes
@@ -476,12 +476,12 @@ for filename in set(filenames):
 #+RESULTS:
 [[file:]]
 
-**** TODO Ajouter légende sur le graphe
+**** DONE Ajouter légende sur le graphe
 **** DONE Placer points avec blue noise
 **** DONE Compute location of vertical lines automatically
 
-** TODO Add latest polls :data:
-** TODO Clean the database on github :data:
+** DONE Add latest polls :data:
+** DONE Clean the database on github :data:
 ** TODO Use ridgeline plots to show evolution of vote for Pécresse for instance :viz:
  See [[https://clauswilke.com/dataviz/boxplots-violins.html][Figure 9.12]] here, very beautiful.
 
