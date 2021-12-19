@@ -247,17 +247,24 @@ def plot_pair(
 
     # And now plot the % ticks
     if not ticks:
+
         by_five = int(limit // 5)
         by_ten = int(limit // 10)
+        print(limit, by_five, by_ten)
 
         if by_ten <= 1:
-            ticks = [5 * m for m in range(1, by_five)]
+            if by_five > 0:
+                ticks = [5 * m for m in range(1, by_five + 1)]
+            else:
+                ticks = [5]
         else:
             ticks = [10 * t for t in range(1, by_ten)]
 
     for t in ticks:
         ax.axvline(t, ymin=0.1, color=colors[c1], lw=0.5)
         ax.axvline(-t, ymin=0.1, color=colors[c2], lw=0.5)
+
+    print(ticks)
 
     ax.set_xlim(-limit - 3, limit + 3)
     ax.set_ylim(-0.3, 3.2)
