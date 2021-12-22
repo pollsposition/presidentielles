@@ -1,6 +1,6 @@
 #+TITLE: Présidentielles 2022
 #+SUBTITLE: Cahier de laboratoire
-#+STARTUP: hideblocks show1levels
+#+STARTUP: hideblocks show2levels
 
 #+PROPERTY: header-args :eval never-export
 #+PROPERTY: header-args+ :session journal :comments yes
@@ -8,11 +8,13 @@
 Dans ce document nous recensons les analyses que nous avons pu faire au jour le jours.
 
 #+description: Load the virtual environment
-#+begin_src elisp :session :exports none :results silent
+#+property: :visibility content
+#+begin_src elisp :results silent
 (pyvenv-workon 'polls)
 #+end_src
 
 #+description: Import needed libraries
+#+property: :visibility content
 #+begin_src python :session :results silent :exports none
 import src.intentions
 import numpy as np
@@ -390,11 +392,7 @@ filename
 #+RESULTS:
 [[file:/tmp/babel-3mBQmE/figureQeoqFc.png]]
 
-** TODO Nouvelle représentation des indécis, etc :viz:
-    - Pour la présentation brute mettre les gens qui n'expriment pas d'intention de vote sur la courbe
-    - Avec les gens sûrs de leur choix mettre le % d'indécis en plus
-    - Pour mettre opinions brutes et certains de leur choix sur le meme graphe:
-      Superposer les intervalles, avec un rond creux pour les certains d'aller voter
+
 ** Pairwise comparisons :viz:
 [2021-12-14 Tue]
 
@@ -479,9 +477,6 @@ for filename in set(filenames):
 **** DONE Ajouter légende sur le graphe
 **** DONE Placer points avec blue noise
 **** DONE Compute location of vertical lines automatically
-
-** TODO Use ridgeline plots to show evolution of vote for Pécresse for instance :viz:
- See [[https://clauswilke.com/dataviz/boxplots-violins.html][Figure 9.12]] here, very beautiful.
 
 ** Harris 13.12
 :PROPERTIES:
@@ -1339,6 +1334,551 @@ filename
 :PROPERTIES:
     :BEGIN: 07/12/2021
     :END: 13/12/2021
-    :BASE:
+    :BASE: Certains d'aller voter
 :END:
 [2021-12-19 Sun]
+
+#+begin_src python :session :results silent
+num_exprimes = int(10928 * 0.61 * (1-.06))
+precision = .25
+resultats = {
+    "Poutou": 1.5,
+    "Arthaud": 0.5,
+    "Roussel": 2,
+    "Mélenchon": 8.5,
+    "Montebourg": 1.5,
+    "Hidalgo": 4.5,
+    "Jadot": 8.5,
+    "Macron": 24,
+    "Pécresse": 17,
+    "Dupont-Aignan": 2,
+    "Zemmour": 14.5,
+    "Le Pen": 14.5,
+    "Lassalle": 1,
+}
+assert sum(list(resultats.values())) == 100
+#+end_src
+
+On utilise le modèle Dirichlet-Multinomial avec une distribution uniforme pour modéliser l'arrondi :
+
+#+begin_src python :session
+results_r = np.array(list(resultats.values())) / 100
+precision_r = precision / 100
+
+with pm.Model() as multinomial:
+    prior_intentions = np.array(list(resultats.values())) * 0.1
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    n = pm.Dirichlet("respondants", num_exprimes * p, observed=results_r)
+
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+On vérifie que tout s'est bien passé :
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+
+with multinomial:
+    az.plot_trace(trace)
+    plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/figureSp0UjM.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "13/12/2021",
+    "Ipsos",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Certains d'aller voter (61% des interrogés)",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 600
+#+RESULTS:
+[[file:/tmp/figureGsopf6.png]]
+
+La différence avec le sondage de Cluster17 est flagrante et souligne la nécessité d'avoir un agrégateur. C'est je pense  cocasse pour la plupart des gens de voir des résultats très différents le matin et le soir de la même journée.
+** Ifop
+:PROPERTIES:
+    :BEGIN: 14/12/2021
+    :END: 15/12/2021
+    :BASE:
+:END:
+[2021-12-20 Mon]
+
+#+begin_src python :session :results silent
+num_exprimes = 1017
+precision = .25
+resultats = {
+    "Poutou": 0.5,
+    "Roussel": 3,
+    "Mélenchon": 9.5,
+    "Montebourg": 1,
+    "Hidalgo": 4.5,
+    "Jadot": 7.5,
+    "Macron": 25.5,
+    "Pécresse": 18,
+    "Dupont-Aignan": 2,
+    "Zemmour": 12,
+    "Le Pen": 16,
+    "Lassalle": 0.5,
+}
+assert sum(list(resultats.values())) == 100
+#+end_src
+
+#+begin_src python :session :async true
+results_r = np.array(list(resultats.values())) / 100
+precision_r = precision / 100
+
+with pm.Model() as multinomial:
+    prior_intentions = np.array(list(resultats.values())) * 0.1
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    n = pm.Multinomial("respondants", num_exprimes, p, shape=(1, len(prior_intentions)))
+    r = n / num_exprimes
+    r_obs = pm.Uniform('observed', r-precision_r, r+precision_r, observed=results_r)
+
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+
+with multinomial:
+    az.plot_trace(trace)
+    plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-FRO4Hm/figureWs6u38.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "15/12/2021",
+    "Ifop",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Inscrits sur les listes électorales",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 600
+#+RESULTS:
+[[file:/tmp/babel-FRO4Hm/figuretjIX6i.png]]
+
+Plusieurs duels sont intéressants:
+- Zemmour / Le Pen
+- Le Pen / Pécresse
+- Mélenchon / Zemmour
+- Jadot / Mélenchon
+- Hidalgo / Roussel
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Zemmour",
+    "Le Pen",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-FRO4Hm/DtxabL.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Pécresse",
+    "Le Pen",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-FRO4Hm/JPKuR4.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Zemmour",
+    "Mélenchon",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-FRO4Hm/mUHqqS.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Zemmour"
+challenger = "Mélenchon"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "zemmourmelenchon.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Jadot",
+    "Mélenchon",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-FRO4Hm/b6DvWw.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Jadot",
+    "Hidalgo",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Roussel",
+    "Hidalgo",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-FRO4Hm/hfrr4Z.png]]
+** Elabe
+:PROPERTIES:
+    :BEGIN: 17/12/2021
+    :END: 20/12/2021
+    :BASE: Comptent aller voter
+:END:
+
+[2021-12-22 Wed]
+
+#+begin_src python :session :results silent
+num_exprimes = int(1351 * (1-.12) * 0.8)
+precision = .5
+resultats = {
+    "Arthaud": 1,
+    "Poutou": 1,
+    "Roussel": 1,
+    "Mélenchon": 11,
+    "Montebourg": 2,
+    "Hidalgo": 3,
+    "Jadot": 5,
+    "Macron": 26,
+    "Pécresse": 17,
+    "Lassalle": 1,
+    "Dupont-Aignan": 2,
+    "Philippot": 1,
+    "Le Pen": 16,
+    "Zemmour": 13,
+}
+assert sum(list(resultats.values())) == 100
+#+end_src
+
+#+begin_src python :session :async true
+results_r = np.array(list(resultats.values())) / 100
+precision_r = precision / 100
+
+with pm.Model() as multinomial:
+    prior_intentions = np.array(list(resultats.values())) * 0.1
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    n = pm.Multinomial("respondants", num_exprimes, p, shape=(1, len(prior_intentions)))
+    r = n / num_exprimes
+    r_obs = pm.Uniform('observed', r-precision_r, r+precision_r, observed=results_r)
+
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+
+with multinomial:
+    az.plot_trace(trace)
+    plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-9JwRqu/figure8KYFlv.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "20/12/2021",
+    "Elabe",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Comptant aller voter (80% des inscrits)",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 600
+#+RESULTS:
+[[file:/tmp/babel-9JwRqu/figureTSxadC.png]]
+
+
+Duals intéressants:
+- Pécresse / Le Pen
+- Le Pen / Zemmour
+- Mélenchon / Zemmour
+- Primaire de la gauche
+
+*** Qualification au 2nd tour: Le Pen / Pécresse
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Pécresse",
+    "Le Pen",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-9JwRqu/WMhEfe.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Pécresse"
+challenger = "Le Pen"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "lepenpecresse.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:]]
+
+*** Le Pen vs Zemmour
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Zemmour",
+    "Le Pen",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-9JwRqu/gIJxoR.png]]
+
+*** Mélenchon vs Zemmour
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Zemmour",
+    "Mélenchon",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-9JwRqu/QfkrGG.png]]
+
+#+begin_src python :session :async true :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+import matplotlib.pyplot as plt
+import os
+from pygifsicle import optimize
+import imageio
+
+reference = "Zemmour"
+challenger = "Mélenchon"
+
+wins = np.ceil(100 * np.sum(intentions_r[reference]>intentions_r[challenger]) / len(intentions_r[reference]))
+
+filenames = []
+for i in range(1, 100):
+    if i % 10 == 0:
+        print(i)
+    plt.clf()
+    fig = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f"{wins:.0f} sur 100", challenger: f"{100-wins:.0f} sur 100"},
+        num_points=i
+    )
+
+    filename = f"intentions-pairwise-{i}.png"
+    plt.savefig(filename, bbox_inches="tight")
+    filenames.append(filename)
+
+with imageio.get_writer("intentions-pairwise.gif", mode="I") as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize("intentions-pairwise.gif", "zemmourmelenchon.gif")  # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+#+RESULTS:
+[[file:]]
+
+*** Primaire de la gauche
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Jadot",
+    "Mélenchon",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-9JwRqu/7r1AlW.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Jadot",
+    "Hidalgo",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-9JwRqu/Rv87PI.png]]
