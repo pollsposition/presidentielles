@@ -6,3 +6,5 @@ __pychache__
 /tags
 __pycache__
 *.gif
+*.pdf
+*.tex

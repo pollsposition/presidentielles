@@ -1,10 +1,15 @@
 #+TITLE: Pollsposition
 #+SUBTITLE: Bayesian statistics and French politics
 #+STARTUP: hideblocks overview
-#+OPTIONS: \n:t toc:nil
+#+OPTIONS: \n:t
 #+PROPERTY: header-args:latex :results raw :exports results
 #+PROPERTY: header-args:python :eval no-export :noweb strip-export
 #+filetags: :statistics:public:polls:pollsposition:
+
+#+begin_abstract
+Blablabla
+#+end_abstract
+
 
 Every pre-election poll tries to answer the question:
 
@@ -948,7 +953,7 @@ actually go to someone else.
 
 Sorry but this is a very rough draft written for myself.
 
-See [[id:4fd036f0-8812-411d-bd25-acd1ebefb7d9][Forecasting elections in multiparty systems: a Bayesian approach combining polls and fundamentals]]
+See [[cite:&stoetzer2019]]
 
 * TODO Link Gaussian process to stochastic processes
 * TODO Make the gaussian process work with a non-diagonal covariance matrix
@@ -977,7 +982,7 @@ We integrate two different models:
 
 We use Gaussian processes to model the time evolution of the different parameters. However:
 - We use 1D gaussian processes, one for each party where we could use a multidimensional GP with a dense covariance matrix instead (and thus model the 'transfers');
-- We use the [[id:338df7ae-048d-4a93-861b-80f75c3b887e][Squared exponential kernel]] but the [[id:1a08425d-1fa8-4f9f-98d0-423b0d5c0991][Ornstein-Uhlenbeck kernel]] should be more adaptated as a stochastic process. We could also try a non-stationary kernel as the [[id:dc211cf2-78b4-4269-91e8-fc88fb49def5][Wiener kernel]] (I don't see why the distribution should be stationary here)
+- We use the Squared exponential kernel but the Ornstein-Uhlenbeck kernel should be more adaptated as a stochastic process. We could also try a non-stationary kernel as the Wiener kernel (I don't see why the distribution should be stationary here)
 - The value of the parameter is the sum of three parameters modeled by GPs with different timescales. /Can we do better than this?/
 
 
@@ -1170,7 +1175,7 @@ We note $r_{pe}$ the result for party $p$ at election $e$, $R_e$ the number of v
 
 Q: /What if there are several polls in one day?/
 
-Q: /How do we handle uncertain choices here? Refer to [[id:155e7a77-7c6d-40ec-ad7d-69078cb19af6][What can we say from one poll?]]  /
+Q: /How do we handle uncertain choices here?
 
 
 ** IDEA Why not use a Dirichlet-Dirichlet distribution instead of Dirichlet-Multinomial distribution since we get the results as % :noexport:
