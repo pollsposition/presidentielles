@@ -1,6 +1,1177 @@
 #+TITLE: Pollsposition
 #+SUBTITLE: Bayesian statistics and French politics
-#+STARTUP: hideblocks show2levels
+#+STARTUP: hideblocks overview
+#+OPTIONS: \n:t toc:nil
+#+PROPERTY: header-args:latex :results raw :exports results
+#+PROPERTY: header-args:python :eval no-export :noweb strip-export
+#+filetags: :statistics:public:polls:pollsposition:
+
+Every pre-election poll tries to answer the question:
+
+/If the election were to happen the following weekend, who would people be voting for?/
+
+We note $\boldsymbol{v}$ the vector that contains the number of people that will vote for either of the $c$ candidates. The *true* value of $\boldsymbol{v}$ is unknow and could only be obtained if we held elections the following weekend. People (including the media) usually assume that $\boldsymbol{v}$ is the quantity reported by polling institutes. It is not.
+
+Here I try to show how the voting intentions $\boldsymbol{v}$ related to the answers $\boldsymbol{n}$
+Here we will try to infer the value of $\boldsymbol{v}$. To do so we need to mathematically relate $\boldsymbol{v}$ to quantities that are reported in opinion polls.
+
+* Modeling intentions
+
+Pollsters ask a series of questions to people who are registered to vote. Among which, they ask people who they would vote for should the elections happen the following weekend. As a result we get:
+
+#+begin_src latex
+\begin{equation}
+    \mathbf{n} = \left(n_1,\dots,n_c, n_{nr}\right),\: \sum_i n_i = N
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+    \mathbf{n} = \left(n_1,\dots,n_c, n_{nr}\right),\: \sum_i n_i = N
+\end{equation}
 
 
-* Time evolving coefficients
+a vector that contains the number of people who designated each candidate. $n_{nr}$ is the number of people who chose to not respond.
+
+Very often the $n_i$ are not given in the pollster's released reports, and we are given instead $\tilde{r_i}$, the rounded portion of respondants who would vote for $i$. The rounding process is such that
+
+#+begin_src latex
+\begin{equation}
+  r_i \in [\tilde{r}_i -\delta, \tilde{r}_i + \delta]
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  r_i \in [\tilde{r}_i -\delta, \tilde{r}_i + \delta]
+\end{equation}
+
+where
+
+#+begin_src latex
+\begin{equation}
+  r_i = \frac{n_i}{N-n_{nr}}
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  r_i = \frac{n_i}{N-n_{nr}}
+\end{equation}
+
+We can directly model the vector of ratios $\mathbf{r}$ with a reparametrized Dirichlet distribution:
+
+#+begin_src latex
+\begin{equation}
+  \boldsymbol{r} \sim \operatorname{Dirichlet}(\boldsymbol{p}, N)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  \boldsymbol{r} \sim \operatorname{Dirichlet}(\boldsymbol{p}, N)
+\end{equation}
+
+where $\sum_i p_i = 1$ and each $p_i$ represents the "true" probability to vote for candidate $i$. A natural prior for the $p_i$ is the Dirichlet distribution:
+
+#+begin_src latex
+\begin{equation}
+  \boldsymbol{p} \sim \operatorname{Dirichlet}(\boldsymbol{\alpha})
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  \boldsymbol{p} \sim \operatorname{Dirichlet}(\boldsymbol{\alpha})
+\end{equation}
+
+Let us consider a [[https://elabe.fr/wp-content/uploads/2021/12/presidentielle-2022.pdf][somewhat controversial poll from Elabe]] where Pécresse was given 20% of the vote intentions while she was around 10% a few weeks back. I reproduce the data below :
+
+#+begin_src python :session
+# Results are given for certain to vote + expressed intention
+sample_size = int(1354 * (0.57+0.15+0.10) * (1-0.13))
+results = {
+    "Poutou": 0.02,
+    "Arthaud": 0.01,
+    "Roussel": 0.01,
+    "Mélenchon": 0.08,
+    "Hidalgo": 0.03,
+    "Montebourg": 0.02,
+    "Jadot": 0.07,
+    "Macron": 0.23,
+    "Pécresse": 0.20,
+    "Lassalle": 0.02,
+    "Dupont-Aignan": 0.02,
+    "Le Pen": 0.15,
+    "Zemmour": 0.14
+}
+num_candidates = len(results)
+granularity = delta = 0.5
+assert sum(results.values()) == 1.
+#+end_src
+
+#+RESULTS:
+
+We fit the simplified model using a vague prior on the true intentions:
+
+#+begin_src python :session :async true
+import numpy as np
+import pymc3 as pm
+
+prior_intentions = np.array(
+    [0.02, 0.02, 0.02, 0.10, 0.05, 0.02, 0.10, 0.20, 0.20, 0.02, 0.02, 0.20, 0.15]
+)
+
+with pm.Model() as intentions:
+    p = pm.Dirichlet("intentions", prior_intentions)  # Prior too vague?
+    r = pm.Dirichlet("real_ratios", sample_size * p, observed=list(results.values()))
+#+end_src
+
+#+RESULTS:
+
+We sample from the posterior distribution without any incident as attested by the trace:
+
+#+begin_src python :session :async true :exports none
+with intentions:
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename="./images/what-can-we-say-trace.svg"
+import arviz as az
+import matplotlib.pyplot as plt
+
+az.plot_trace(trace)
+plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:./images/what-can-we-say-trace.svg]]
+
+
+We can now look at the raw voting intentions inferred from the poll's results:
+
+#+begin_src python :session :exports none
+def plot_intentions(
+    intentions,
+    colors,
+    dates="",
+    pollster="",
+    title="Intentions de vote au premier tour",
+    logo_path="./images/logo.png",
+    max_intentions=30,
+    ranks=[5, 95],
+):
+    """Use a forest plot to represent the voting intentions.
+
+    In ASCII format:
+
+    [LOGO] Intentions de vote au premier tour
+    [    ] {date} | {pollster}
+
+    | 10%                    | 15%               | 20%
+    |         Candidat       |                   |
+    |   13.5 ----o---- 14.2  |                   |
+    |                        |                   |
+    |                        |                   |
+    """
+    num_candidats = len(intentions)
+
+    for candidate in intentions:
+        try:
+            colors[candidate]
+        except KeyError:
+            raise KeyError(f"You need to provide a color for candidate {candidate}")
+
+    gs = grid_spec.GridSpec(num_candidates, 1)
+    fig = plt.figure(figsize=(8, 10))
+    axes = []
+
+    for i, (c, samples) in enumerate(intentions.items()):
+        axes.append(fig.add_subplot(gs[i : i + 1, 0:]))
+
+        samples_r = 100 * samples
+        percentiles = np.percentile(samples_r, ranks)
+        axes[-1].plot(percentiles, [0.15, 0.15], lw=1, color=colors[c])
+        axes[-1].scatter([np.mean(samples_r)], [0.15], color=colors[c])
+
+        # setting uniform x and y lims
+        axes[-1].set_xlim(0, max_intentions)
+        axes[-1].set_ylim(0, 0.5)
+
+        # transparent background
+        rect = axes[-1].patch
+        rect.set_alpha(0)
+
+        # remove borders, ticks and labels
+        axes[-1].set_yticklabels([])
+        axes[-1].set_ylabel("")
+        axes[-1].yaxis.set_ticks_position("none")
+
+        axes[-1].set_xticklabels([])
+        axes[-1].xaxis.set_ticks_position("none")
+
+        axes[-1].axvline(5, lw=0.3, color="lightgray", ls="--")
+        axes[-1].axvline(10, lw=0.3, color="lightgray", ls="--")
+        axes[-1].axvline(15, lw=0.3, color="lightgray", ls="--")
+        axes[-1].axvline(20, lw=0.3, color="lightgray", ls="--")
+        if i == 0:
+            axes[-1].text(
+                5.2,
+                0.45,
+                "5%",
+                fontweight="bold",
+                fontname="Futura PT",
+                color="lightgray",
+            )
+            axes[-1].text(
+                10.2,
+                0.45,
+                "10%",
+                fontweight="bold",
+                fontname="Futura PT",
+                color="lightgray",
+            )
+            axes[-1].text(
+                15.2,
+                0.45,
+                "15%",
+                fontweight="bold",
+                fontname="Futura PT",
+                color="lightgray",
+            )
+Ce qui a pour effet de resserer la compétition. En particulier on voit la probabilité
+            axes[-1].text(
+                20.2,
+                0.45,
+                "20%",
+                fontweight="bold",
+                fontname="Futura PT",
+                color="lightgray",
+            )
+
+        spines = ["top", "right", "left", "bottom"]
+        for s in spines:
+            axes[-1].spines[s].set_visible(False)
+
+        axes[-1].text(
+            np.mean(samples_r),
+            0.3,
+            f"{c}",
+            fontweight="bold",
+            fontname="Futura PT",
+            va="center",
+            ha="center",
+            fontsize=12,
+            color=colors[c],
+        )
+        axes[-1].text(
+            percentiles[0] - 1,
+            0.15,
+            f"{percentiles[0]:.1f}",
+            fontweight="normal",
+            fontname="Futura PT",
+            va="center",
+            ha="center",
+            fontsize=10,
+            color=colors[c],
+        )
+        axes[-1].text(
+            percentiles[1] + 1,
+            0.15,
+            f"{percentiles[1]:.1f}",
+            fontweight="normal",
+            fontname="Futura PT",
+            va="center",
+            ha="center",
+            fontsize=10,
+            color=colors[c],
+        )
+
+    axes.append(fig.add_axes([0.07, 0.9, 0.1, 0.1]))
+    im = imageio.imread(logo_path)
+    axes[-1].imshow(im)
+    axes[-1].axis("off")
+
+    fig.text(
+        0.18, 0.94, f"{title}", fontsize=25, fontweight="bold", fontname="Futura PT"
+    )
+    fig.text(
+        0.18,
+        0.92,
+        f"{dates} | {pollster}",
+        fontsize=10,
+        fontweight="normal",
+        fontname="Futura PT",
+        color="darkgray",
+    )
+    fig.text(
+        0.93,
+        0.08,
+        "Tracé avec soin par @pollsposition",
+        ha="right",
+        va="bottom",
+        fontsize=10,
+        fontweight="normal",
+        fontname="Futura PT",
+        color="darkgray",
+    )
+    fig.text(
+        0.93,
+        0.01,
+        "Les barres et chiffres représentent les intervalles de crédibilité à 95%",
+        ha="right",
+        va="bottom",
+        fontsize=10,
+        fontweight="normal",
+        fontname="Futura PT",
+        color="darkgray",
+    )
+
+    gs.update(hspace=-0.1)
+    return fig
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-raw.svg"
+intentions = {
+    candidate: trace["intentions"][:, i] for i, candidate in enumerate(results)
+}
+colors = {
+    "Poutou": "#BB0000",
+    "Arthaud": "#BB0000",
+    "Roussel": "#DD0000",
+    "Mélenchon": "#CC2443",
+    "Hidalgo": "#FF8080",
+    "Jadot": "#00C000",
+    "Montebourg": "#FFDAC1",
+    "Macron": "#FFEB00",
+    "Pécresse": "#0066CC",
+    "Lassalle": "#26C4EC",
+    "Zemmour": "#141517",
+    "Dupont-Aignan": "#0082C4",
+    "Le Pen": "#0D378A",
+}
+colors = {
+    "Poutou": "#FF9AA2",
+    "Arthaud": "#FF9AA2",
+    "Roussel": "#FF9AA2",
+    "Mélenchon": "#FFB7B2",
+    "Hidalgo": "#FFDAC1",
+    "Jadot": "#E2F0CB",
+    "Montebourg": "#FFDAC1",
+    "Macron": "#C7CEEA",
+    "Pécresse": "#C7CEEA",
+    "Lassalle": "#C7CEEA",
+    "Zemmour": "#141517",
+    "Dupont-Aignan": "#C7CEEA",
+    "Le Pen": "#9597A0",
+}
+
+fig = plot_intentions(intentions, colors, '06/12/2021 - 07/12/2021', "Elabe pour BFMTV, L'Express et SFR", title="Intentions de vote brutes")
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+ATTR_ORG: :width 500
+#+RESULTS:
+[[file:images/what-can-we-say-raw.svg]]
+
+#+begin_src python :session :exports none
+# And we can compute the 95% intervals:
+hdi = az.hdi(trace, hdi_prob=0.95).intentions.values
+for i, c in enumerate(intentions.keys()):
+    print(f"{c} (95% HDI): ({100 * hdi[i][0]:.1f}%, {100 * hdi[i][1]:.1f}%)")
+    print(f"{c} (mean): {100* np.mean(trace.intentions[:,i]):.1f}")
+#+end_src
+
+#+RESULTS:
+
+* Uncertain choice
+
+The previous curves thus makes the underlying assumption that every unsure people will stick to their answer. But some people will change their mind. They are even more likely to do so the further we are from the election.
+
+Luckily some polls (including Elabe) ask people whether they are certain of their choice :
+
+#+begin_src python :session
+# 0.56 corresponds to the reported average (no data for this candidate)
+choice_certainty = {
+    "Poutou": 0.56,
+    "Arthaud": 0.56,
+    "Roussel": 0.56,
+    "Mélenchon": 0.67,
+    "Hidalgo": 0.56,
+    "Montebourg": 0.56,
+    "Jadot": 0.48,
+    "Macron": 0.66,
+    "Pécresse": 0.54,
+    "Lassalle": 0.56,
+    "Dupont-Aignan": 0.56,
+    "Le Pen": 0.73,
+    "Zemmour": 0.63
+}
+#+end_src
+
+#+RESULTS:
+
+Let us first look at the distributions when we only consider people who are absolutely sure to vote for that person:
+
+#+begin_src python :session :exports none
+intentions_certain = {
+    c: sample_size * choice_certainty[c] * intentions[c] for c in results
+}
+intentions_uncertain = {
+    c: sample_size * (1-choice_certainty[c]) * intentions[c] for c in results
+}
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-abstention.svg"
+ratio_certain = {k: v / sample_size for k, v in intentions_certain.items()}
+fig = plot_intentions(
+    ratio_certain,
+    colors,
+    "06/12/2021 - 07/12/2021",
+    "Elabe pour BFMTV, L'Express et SFR",
+    title='Intentions des gens sûrs de leur choix',
+    max_intentions=25
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+ATTR_ORG: :width 500
+#+RESULTS:
+[[file:images/what-can-we-say-abstention.svg]]
+
+
+#+begin_src python :session :exports none
+# Let's compute probabilities!
+mj = 100 * np.sum(intentions['Mélenchon'] > intentions['Jadot'])/len(intentions['Mélenchon'])
+mj_certain = 100 * np.sum(ratio_certain['Mélenchon'] > ratio_certain['Jadot'])/len(ratio_certain['Mélenchon'])
+print(f"Mélenchon est devant Jadot dans {mj_certain}% des simulations au lieu de {mj}%")
+
+pl = 100 * np.sum(intentions['Pécresse'] > intentions['Le Pen'])/len(intentions['Mélenchon'])
+pl_certain = 100 * np.sum(ratio_certain["Pécresse"] > ratio_certain["Le Pen"])/len(ratio_certain['Mélenchon'])
+print(f"Pécresse est devant Le Pen dans {pl_certain}% des simulations au lieu de {pl}%")
+
+zl = 100 * np.sum(intentions["Le Pen"] > intentions["Zemmour"])/len(intentions['Mélenchon'])
+zl_certain = 100 * np.sum(ratio_certain["Le Pen"] > ratio_certain["Zemmour"])/len(ratio_certain['Mélenchon'])
+print(f"Le Pen est devant Zemmour dans {zl_certain}% des simulations au lieu de {zl}%")
+#+end_src
+
+#+RESULTS:
+: None
+This substantially changes the results, and Pécresse is not guaranteed to go to the runoff. Here is the probability that X has a better score than Y taking the uncertains into account and without.
+
+| X         | Y       | Uncertains don't vote | Uncertains don't change their mind |
+|-----------+---------+-----------------------+------------------------------------|
+| Pécresse  | Le Pen  |                 99.7% |                              44.5% |
+| Le Pen    | Zemmour |                 71.5% |                             97.15% |
+| Mélenchon | Jadot   |                 71.5% |                              99.8% |
+
+
+This is of course a very unrealistic scenario, so let us try to model the presence of uncertain people.
+
+We note $\tilde{\zeta}_i$ the reported proportion of the $n_i$ people who say they are sure to vote for $i$, which is the rounded version of $\zeta_i$ the true proportion of people who say they are going to vote for $i$ and are certain to do so.
+
+The number $v_i$ of people who would actually vote for $i$ this weekend is given by
+
+#+begin_src latex
+\begin{equation}
+  v_{i} = n_{i} \zeta_{i} + \Omega_{i}
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  v_{i} = n_{i} \zeta_{i} + \Omega_{i}
+\end{equation}
+
+where
+
+#+begin_src latex
+\begin{equation}
+ \Omega_{i}  = \sum_{j} \bar{\zeta}_{j,i}
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \Omega_{i}  = \sum_{j} \bar{\zeta}_{j,i}
+\end{equation}
+
+Where
+
+#+begin_src latex
+\begin{equation}
+\bar{\zeta}_{j,i} = n_j (1-\zeta_j)\: \epsilon_{j,i}
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+\bar{\zeta}_{j,i} = n_j (1-\zeta_j)\: \epsilon_{j,i}
+\end{equation}
+
+is the number of people who originally said they intended to vote for $j$ but will actually vote for $i$.
+
+Although it is needed for posterior predictive sampling, the distributions of $\epsilon_{j,i}$ is unknown. In the absence of more information we have no choice but to explore several assumptions.
+
+** Won't change their mind
+
+Everyone who told the pollster they have the intention to vote for $i$ will actually vote for $i$.
+
+#+begin_src latex
+\begin{equation}
+  \epsilon_{i,j} = \delta_{i,j}
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  \epsilon_{i,j} = \delta_{i,j}
+\end{equation}
+
+where $\delta$ is the Kronecker symbol, $\delta_{i,i} = 1$ and $\delta_{i,j} = 0$ if $i \neq j$. This hypothesis gives us a /lower bound/ on the total uncertainty. This corresponds to the first figure with raw vote intentions we showed earlier.
+
+** Completely undecided
+
+A perhaps extreme example. We pretend to not know anything at all about the undecided and assume they will chose uniformly at random among the remanining candidates:
+
+#+begin_src latex
+\begin{equation}
+  \epsilon_{i} = \operatorname{Dirichlet}(\boldsymbol{\beta})
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  \epsilon_{i} = \operatorname{Dirichlet}(\boldsymbol{\beta})
+\end{equation}
+
+where $\boldsymbol{\beta} \propto \mathrm{1}$. This gives us an /upper bound/ (given the information we have) on the total uncertainty.
+
+#+begin_src python :session :exports none
+def divide_completely_undecided(intentions_certain, intentions_uncertain):
+    values_uncertain = np.array(list(intentions_uncertain.values()))
+    values_certain = np.array(list(intentions_certain.values()))
+
+    rng = np.random.default_rng()
+    transition = rng.dirichlet(np.ones(len(intentions_uncertain)), size=(4000, len(intentions_uncertain)))
+    transfers = np.einsum('kij,jk->ik', transition, values_uncertain)
+    values = values_certain + transfers
+    return values
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-random.svg"
+values = divide_completely_undecided(intentions_certain, intentions_uncertain)
+ratio_random = {k: values[i]/sample_size for i,k in enumerate(intentions.keys())}
+
+fig = plot_intentions(
+    ratio_random,
+    colors,
+    "06/12/2021 - 07/12/2021",
+    "Elabe pour BFMTV, L'Express et SFR",
+    title='Intentions (incertains -> choix aléatoire)',
+    max_intentions=25
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 500
+#+RESULTS:
+[[file:images/what-can-we-say-random.svg]]
+
+In the following figure we go one step further. We divide people who are certain to vote but did not give any name uniformly among the candidates. We observed an increased uncertainty and results that are less clear cut:
+
+#+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-all-random.svg"
+num_indecis = int(1354 * (0.57+0.15+0.10)* 0.13)
+values_uncertain = np.array(list(intentions_uncertain.values()))
+values_certain = np.array(list(intentions_certain.values()))
+
+rng = np.random.default_rng()
+
+transition = rng.dirichlet(np.ones(len(intentions_uncertain)), size=(4000, len(intentions_uncertain)))
+transfers = np.einsum('kij,jk->ik', transition, values_uncertain)
+
+transition_i = rng.dirichlet(np.ones(num_candidates), size=4000).T
+values = values_certain + transfers + transition_i * num_indecis
+
+ratio_all_random = {k: values[i]/(sample_size+num_indecis) for i,k in enumerate(intentions.keys())}
+
+fig = plot_intentions(
+    ratio_all_random,
+    colors,
+    "06/12/2021 - 07/12/2021",
+    "Elabe pour BFMTV, L'Express et SFR",
+    title='Intentions (incluant les non-exprimés)',
+    max_intentions=25
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 400
+#+RESULTS:
+[[file:images/what-can-we-say-all-random.svg]]
+
+
+** Constant fraction of undecided
+
+An intermediate assumption is that there is a constant fraction of undecided who will vote for the candidate, and the rest will vote for someone else uniformly at random.
+
+#+begin_src python :session :exports none
+def divide_more_likely_stay(p_stay, intentions_certain, intentions_uncertain):
+    rng = np.random.default_rng()
+    num_candidates = len(intentions_uncertain)
+
+    alpha_0 = num_candidates * p_stay / (1-p_stay)
+
+    prior = (alpha_0-1) * np.eye(num_candidates) + np.ones((num_candidates, num_candidates))
+    transition = np.stack([rng.dirichlet(prior[i], size=(4000,)) for i in range(num_candidates)], axis=1)
+    values_uncertains = np.array(list(intentions_uncertain.values()))
+    transfers = np.einsum('kij,jk->ik', transition, values_uncertains)
+    values_certain = np.array(list(intentions_certain.values()))
+    values = values_certain + transfers
+    return values
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename="./images/what-can-we-say-constant-fraction.svg"
+p = 0.10
+values = divide_more_likely_stay(p, intentions_certain, intentions_uncertain)
+ratio_more_likely = {k: values[i]/sample_size for i,k in enumerate(intentions.keys())}
+
+fig = plot_intentions(
+    ratio_more_likely,
+    colors,
+    "06/12/2021 - 07/12/2021",
+    "Elabe pour BFMTV, L'Express et SFR",
+    title=f"{100*p}% des incertains restent",
+    max_intentions=25
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 400
+#+RESULTS:
+[[file:./images/what-can-we-say-constant-fraction.svg]]
+
+
+#+begin_src python :session :exports none
+"""We create a GIF that represents the voting intentions vs % of people that will vote for their first choice"""
+import imageio
+import os
+import math
+
+probs = [0.99] * 5
+probs += [.95, .90, .85, .80, .75, .70, .65, .60, .55, .50, .45, .40, .35, .30, .25, .20, .15, .10, .05]
+probs += [.01] * 10
+probs += reversed([.95, .90, .85, .80, .75, .70, .65, .60, .55, .50, .45, .40, .35, .30, .25, .20, .15, .10, .05])
+filenames = []
+for p in probs:
+    print(p)
+    filename = f"images/intentions-uncertains-{math.ceil(100*p)}.png"
+    values = divide_more_likely_stay(p, intentions_certain, intentions_uncertain)
+    ratio_more_likely = {k: values[i]/sample_size for i,k in enumerate(intentions.keys())}
+
+    fig = plot_intentions(
+        ratio_more_likely,
+        colors,
+        "06/12/2021 - 07/12/2021",
+        "Elabe pour BFMTV, L'Express et SFR",
+        title=f"{math.ceil(100*p):.0f}% des incertains restent",
+        logo_path='images/logo.png',
+        max_intentions=27
+    )
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches="tight")
+    plt.close()
+    filenames.append(filename)
+
+with imageio.get_writer("images/intentions.gif", mode="I") as writer:
+    for filename in filenames:
+        for _ in range(4):
+            image = imageio.imread(filename)
+            writer.append_data(image)
+
+from pygifsicle import optimize
+optimize("images/intentions.gif", "optimized.gif") # For creating a new one
+
+for filename in set(filenames):
+    os.remove(filename)
+#+end_src
+
+
+#+begin_src python :session :results file :exports none
+import imageio
+import os
+import math
+
+def plot_indecision(candidate_1, candidate_2):
+    probs = np.linspace(.01, .99, 100)
+    avg1 = []
+    avg2 = []
+    fifth1 = []
+    fifth2 = []
+    ninefifth1 = []
+    ninefifth2 = []
+    for p in probs:
+        values = divide_more_likely_stay(p, intentions_certain, intentions_uncertain)
+        ratio_more_likely = {k: values[i]/sample_size for i,k in enumerate(intentions.keys())}
+
+        avg1.append(100*np.mean(ratio_more_likely[candidate_1]))
+        f,n = np.percentile(ratio_more_likely[candidate_1], [5, 95])
+        fifth1.append(100*f)
+        ninefifth1.append(100*n)
+
+        avg2.append(100*np.mean(ratio_more_likely[candidate_2]))
+        f,n = np.percentile(ratio_more_likely[candidate_2], [5, 95])
+        fifth2.append(100*f)
+        ninefifth2.append(100*n)
+
+    fig, ax = plt.subplots(figsize=(14,8))
+    ax.plot(100*probs, avg1, color=colors[candidate_1], label=candidate_1)
+    ax.fill_between(100*probs, fifth1, ninefifth1, color=colors[candidate_1], alpha=0.5, label=f"Intervalle de crédibilité \nà 95%({candidate_1})")
+    ax.plot(100*probs, avg2, color=colors[candidate_2], label=candidate_2)
+    ax.fill_between(100*probs, fifth2, ninefifth2, color=colors[candidate_2], alpha=0.5, label=f"Intervalle de crédibilité \n à 95%({candidate_2})")
+    ax.set_xlabel("% d'indécis qui suivent leur déclaration", fontname='Futura PT', fontweight='light', fontsize=16)
+    ax.set_ylabel("% d'intentions de vote", fontname='Futura PT', fontweight='light', fontsize=16)
+
+    # Remove axis lines.
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    # Set spine extent.
+    ax.spines['bottom'].set_bounds(0, 100)
+    ax.spines['left'].set_bounds(
+        min(np.min(fifth1), np.min(fifth2)),
+        max(np.max(ninefifth1), np.max(ninefifth2))
+    )
+
+    fig.suptitle("Évolution des intentions de votes avec l'indécision", fontname="Futura PT", fontweight="bold", fontsize=20)
+
+    # Set x ticks
+    x_ticks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    ax.xaxis.set_ticks(x_ticks)
+
+    plt.legend(loc="upper left", bbox_to_anchor=(1., 1.), frameon=False, prop={'family':'Futura PT', 'weight': "normal", 'size': 12})
+
+    return fig
+#+end_src
+
+Let us show now the evolution of the voting intentions for different pairs of candidates depending on the fraction of uncertaint people who will vote for whoever they said they would:
+
+#+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-lepen-zemmour-indecis.svg"
+fig = plot_indecision("Zemmour", "Le Pen")
+plt.tight_layout()
+plt.savefig(filename, dpi=300, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 600
+#+RESULTS:
+[[file:images/what-can-we-say-lepen-zemmour-indecis.svg]]
+
+
+#+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-lepen-pecresse-indecis.svg"
+fig = plot_indecision("Pécresse", "Le Pen")
+plt.tight_layout()
+plt.savefig(filename, dpi=300, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 500
+#+RESULTS:
+[[file:images/what-can-we-say-lepen-pecresse-indecis.svg]]
+
+
+#+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-melenchone-jadot-indecis.svg"
+fig = plot_indecision("Jadot", "Mélenchon")
+plt.tight_layout()
+plt.savefig(filename, dpi=300, bbox_inches="tight")
+filename
+#+end_src
+
+#+attr_org: :width 600
+#+RESULTS:
+[[file:images/what-can-we-say-melenchone-jadot-indecis.svg]]
+
+** $\text{Undecided}^2$
+
+We assume that $\boldsymbol{\beta} \propto \boldsymbol{\zeta}$. The more people tend to be certain to vote for candidate $i$, the more likely uncertain people are likely to vote for them in the end.
+
+#+begin_src python :session :exports none
+def divide_stay_more_with_strong_base(intentions_certain, intentions_uncertain):
+    rng = np.random.default_rng()
+    num_candidates = len(intentions_uncertain)
+    alpha_0 = np.array(list(results.values())) * 1
+    prior = np.diag(alpha_0) + np.ones((num_candidates, num_candidates))
+    transition = np.stack([rng.dirichlet(prior[i], size=(4000,)) for i in range(num_candidates)], axis=1)
+    values_uncertains = np.array(list(intentions_uncertain.values()))
+    transfers = np.einsum('kij,jk->ik', transition, values_uncertains)
+    values_certain = np.array(list(intentions_certain.values()))
+    values = values_certain + transfers
+    return values
+#+end_src
+
+** TODO Check the calculations and plot `undecided^2` :noexport:
+
+** Bandwagon effect
+
+We now assume that undecided people are more likely to follow the candidate with the highest score (bandwagon effect, helped by polls)
+
+#+begin_src python :session :exports none
+def divide_bandwagon(intentions_certain, intentions_uncertain):
+    rng = np.random.default_rng()
+    num_candidates = len(intentions_uncertain)
+
+    alpha_0 = 100 * np.array(list(results.values()))
+    prior = np.tile(alpha_0, (num_candidates, 1)).T
+    transition = np.stack([rng.dirichlet(prior[i], size=(4000,)) for i in range(num_candidates)], axis=1)
+    values_uncertains = np.array(list(intentions_uncertain.values()))
+    transfers = np.einsum('kij,jk->ik', transition, values_uncertains)
+    values_certain = np.array(list(intentions_certain.values()))
+    values = values_certain + transfers
+    return values
+#+end_src
+
+** TODO Check the calculations and plot `undecided^2` :noexport:
+
+* Other sources of biases
+
+Election polls also suffer from non-sampling errors. This error can manifest in a biased estimator, as well as a higher variance than would be expect from pure sampling errors.
+
+In an ideal world pollsters could sample among people registered to vote uniformly at random, but this is of course not the case. In case of a phone interview, this would imply that everyone has a phone, is able to pick up the phone at all times, and is willing/has time to answer the survey. This is of course unrealistic; every poll suffers from sampling bias.
+
+** Sampling bias
+
+Two different pollsters $\rho$ and $\rho'$ will build their samples differently, there is thus a /pollster-specific sampling bias/. Some pollsters use different methods to build their sample depending on the poll. We can assume there also is a /method-specific bias/, conditioned on the sample. We will model the pollster-method bias with a random variable $\tilde{\alpha}_{\rho,m}$, and will specify its distribution later.
+
+$\tilde{\alpha}_{\rho,m}$ is a crude proxy for a complex situation, but the only one we can craft in the absence of more information about the composition of the samples.
+
+** Sample adjustment
+
+Pollsters however have more information about the composition of the sample as they usually ask information about the person's gender, age, job and their vote during previous elections. They then use /poststratification/ methods to adjust the results they obtained with this sample to what would be measure with a perfect sample.
+
+In the absence of this information, we assume that adjustment and sampling procedures remain the same for each pollster, and include both biases in the same random variable $\alpha_{\rho,m}$.
+
+** Who will really vote?
+
+Talk about the false controversy about methods that try to only keep people who are likely to vote. There's no point taking into account the opinion who are *absolutely certain*, on the other hand some could change their mind so we cannot exclude everyone.
+
+
+We describe the poll aggregation model that will be used in Pollsposition.
+
+* State of the art
+
+On 538:
+- Polls are weighted based on /sample size/ and /pollster rating/;
+- Make sure not one polling firm dominates the average;
+- There are two ways to compute averages:
+  1. Weighted average;
+  2. Other method that computes a trend line (more aggressive)
+- Polls are subject to 3 types of adjustment:
+  1. *Likely voters* adjustments, which accounts for the fact that polls from
+     likely and registered voters differ in predictable ways.
+  2. *House effect* adjustment which detects polls that consistently leans
+     towards a party and consistently have fewer undecided voters.
+  3. *Timeline adjustment* which is based on polls' recency
+
+
+
+* The model
+
+For each poll $i$  the number of respondents indicating they would vote for
+candidate $j$ is given by $y_{i,j}$ with $n_i$ the total number of respondents
+expressing an opinion. We start with a multinomial response model:
+
+#+begin_src latex
+\begin{equation}
+\hat{y}_{i,j} \sim \operatorname{Binomial}(y_{i,j}, p_{c,j})
+\end{equation}
+#+end_src
+
+#+begin_src latex
+\begin{equation}
+  y_i \sim \operatorname{Multinomial}(\theta_i, N)
+\end{equation}
+#+end_src
+
+We model $\theta_{i}$ as:
+
+#+begin_src latex
+\begin{equation}
+  \theta_{i} = \operatorname{softmax}(p_{i,j})
+\end{equation}
+#+end_src
+
+There are some share biaises between polls:
+
+- The *house effect* $\mu^{c,p}$ which is also conditioned on the party
+- The *polling mode effect* $\mu^m$ which might not be useful as everyone is moving to internet
+- The *polling population effect* $\mu^r$. This would include whether the responses is on the basis
+  of likely voters or not.
+
+And there is a measurement error $\zeta_i$:
+
+#+begin_src latex
+\begin{equation}
+  \zeta_{i} \sim \operatorname{Normal}(0, \sigma_{poll})
+\end{equation}
+#+end_src
+
+We want to model the fact that people are uncertain about their choices. What
+does that mean? That there is a non-zero probability that X% of the choices will
+actually go to someone else.
+
+#+begin_src latex
+\begin{equation}
+\beta_{i,j} = Normal(u_{i,j}, \sigma_j)
+\end{equation}
+#+end_src
+
+Sorry but this is a very rough draft written for myself.
+
+See [[id:4fd036f0-8812-411d-bd25-acd1ebefb7d9][Forecasting elections in multiparty systems: a Bayesian approach combining polls and fundamentals]]
+
+* TODO Link Gaussian process to stochastic processes
+* TODO Make the gaussian process work with a non-diagonal covariance matrix
+
+* Introduction
+
+Dimensions:
+- Elections $e = 1, \dots, E$
+- Parties $p = 1, \dots, P$
+- Pollsters $h=1, \dots, H$
+- Time $t = t_0-N, \dots, t_0$
+
+Latent variables:
+- Intercept with polls $\iota$
+- Latent party $p$ popularity at day $t$ with polls: $\mu_{p, t}$
+- House effect for model with polls $\alpha_k$ where $k=1, \dots, n_{pollsters}$
+- Intercept with results and fundamentals $\tilde{\iota}$
+- House effect for model with results and fundamentals $\tilde{\alpha}_k$
+- Poll biais (what is this?)
+- Latent party $m$ popularity at day $t$ with fundamentals: $\tilde{\mu}_{m, t}$
+
+We integrate two different models:
+- A model that aggregates polls and tries to infer the "true" intentions
+- A model that uses fundamental data to predict the results on election days
+- Both models are integrated as we relate the results to the "true" intention at time $T$ of the election, which is connected to the intentions at previous time steps.
+
+We use Gaussian processes to model the time evolution of the different parameters. However:
+- We use 1D gaussian processes, one for each party where we could use a multidimensional GP with a dense covariance matrix instead (and thus model the 'transfers');
+- We use the [[id:338df7ae-048d-4a93-861b-80f75c3b887e][Squared exponential kernel]] but the [[id:1a08425d-1fa8-4f9f-98d0-423b0d5c0991][Ornstein-Uhlenbeck kernel]] should be more adaptated as a stochastic process. We could also try a non-stationary kernel as the [[id:dc211cf2-78b4-4269-91e8-fc88fb49def5][Wiener kernel]] (I don't see why the distribution should be stationary here)
+- The value of the parameter is the sum of three parameters modeled by GPs with different timescales. /Can we do better than this?/
+
+
+* Intercepts
+
+#+begin_src latex
+\begin{align*}
+  \sigma_{\iota} &\sim \operatorname{HalfNormal}(0.5)\\
+ \iota_{e,p} &\sim \operatorname{ZeroSumNormal}(0, \sigma_{\iota})
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+  \sigma_{\iota} &\sim \operatorname{HalfNormal}(0.5)\\
+ \iota_{e,p} &\sim \operatorname{ZeroSumNormal}(0, \sigma_{\iota})
+\end{align*}
+
+#+begin_src latex
+\begin{align*}
+  \sigma_{\tilde{\iota}} &\sim \operatorname{HalfNormal}(0.5)\\
+ \tilde{\iota}_{p} &\sim \operatorname{ZeroSumNormal}(0, \sigma_{\tilde{\iota}})
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+  \sigma_{\tilde{\iota}} &\sim \operatorname{HalfNormal}(0.5)\\
+ \tilde{\iota}_{p} &\sim \operatorname{ZeroSumNormal}(0, \sigma_{\tilde{\iota}})
+\end{align*}
+
+* House effect
+
+The systemic poll biais shared by every pollster for each political party:
+
+#+begin_src latex
+\begin{equation}
+ \zeta_{p} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \zeta_{p} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+
+The house effet per party
+
+#+begin_src latex
+\begin{equation}
+ \epsilon_{h,p} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \epsilon_{h,p} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+
+And the house effect per (election, party)
+
+#+begin_src latex
+\begin{align*}
+  \sigma_{\tilde{\epsilon}, h, p} &\sim \operatorname{HalfNormal}(0.15)\\
+ \tilde{\epsilon}_{h, p, e} &= \sigma_{\tilde{\epsilon}, h, p} \;\operatorname{ZeroSumNormal}(0, 1)
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+  \sigma_{\tilde{\epsilon}, h, p} &\sim \operatorname{HalfNormal}(0.15)\\
+ \tilde{\epsilon}_{h, p, e} &= \sigma_{\tilde{\epsilon}, h, p} \;\operatorname{ZeroSumNormal}(0, 1)
+\end{align*}
+
+* Fundamental data
+
+Idea that elections are simple to predict using fundamental data. Here we model the unemployment effect $\nu_u$:
+
+#+begin_src latex
+\begin{equation}
+ \nu_u \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \nu_u \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+
+* Time evolution
+
+We model the time evolution of parties' latent popularity with 3 gaussian processes with different length scales to catch the different time scales of the process.
+
+* Combine the factors
+
+** Poll aggregator
+
+#+begin_src latex
+\begin{equation}
+ \lambda_{h, t, e, p} = \tilde{\iota}_{p} + \iota_{e,p} + \mu_{t,p} + \tilde{\mu}_{t,e,p} + \zeta_{u} \; U_{t} + \zeta_{p} + \epsilon_{h,p} + \tilde{\epsilon}_{h,p,e}
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \lambda_{h, t, e, p} = \tilde{\iota}_{p} + \iota_{e,p} + \mu_{t,p} + \tilde{\mu}_{t,e,p} + \zeta_{u} \; U_{t} + \zeta_{p} + \epsilon_{h,p} + \tilde{\epsilon}_{h,p,e}
+\end{equation}
+
+We then note the vector $\mathbf{p}_{h, t, e} = \left(p_{h,t,e,Green}, \dots, p_{h,t,e,Left}\right)$ and write
+
+#+begin_src latex
+\begin{equation}
+\mathbf{p}_{h, t, e} = \operatorname{Softmax}(\lambda_{h, t, e})
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+\mathbf{p}_{h, t, e} = \operatorname{Softmax}(\lambda_{h, t, e})
+\end{equation}
+
+The latent popularity is given by removing the house effects & poll biases:
+
+#+begin_src latex
+\begin{equation}
+ \mathbf{p}^{latent}_{h,t,e} = \operatorname{Softmax}\left(\tilde{\iota}_{p} + \iota_{e,p} + \mu_{tp} + \tilde{\mu}_{t,e,p} + \nu_{u} \; U_{t}\right)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \mathbf{p}^{latent}_{h,t,e} = \operatorname{Softmax}\left(\tilde{\iota}_{p} + \iota_{e,p} + \mu_{tp} + \tilde{\mu}_{t,e,p} + \nu_{u} \; U_{t}\right)
+\end{equation}
+
+
+** Fundamentals model
+
+#+begin_src latex
+\begin{equation}
+ \tilde{p}_{h, t, e, p} = \operatorname{Softmax}\left(\tilde{\iota}_{p} + \iota_{e,p} + \mu_{t_0,p} + \tilde{\mu}_{t_0,e,p} + \nu_{u} \; U_{t_0}\right)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \tilde{p}_{h, t, e, p} = \operatorname{Softmax}\left(\tilde{\iota}_{p} + \iota_{e,p} + \mu_{t_0,p} + \tilde{\mu}_{t_0,e,p} + \nu_{u} \; U_{t_0}\right)
+\end{equation}
+
+
+* Connect to poll results and election results
+
+The concentration parametrer:
+
+#+begin_src latex
+\begin{equation}
+ \alpha \sim \operatorname{InverseGamma}(1000, 100)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \alpha \sim \operatorname{InverseGamma}(1000, 100)
+\end{equation}
+
+We note $n_{h, p, t, e}$ the result of a poll at time $t$ for party $p$, and $N_{t}$ the number of respondents:
+
+#+begin_src latex
+\begin{equation}
+ n_{h, p,t, e} \sim \operatorname{DirichletMultinomial}(\alpha\,p_{hpte}, N_{t})
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ n_{h, p,t, e} \sim \operatorname{DirichletMultinomial}(\alpha\,p_{hpte}, N_{t})
+\end{equation}
+
+We note $r_{pe}$ the result for party $p$ at election $e$, $R_e$ the number of voters and we write
+
+#+begin_src latex
+\begin{equation}
+  r_{pe} \sim \operatorname{DirichletMultinomial}\left(\alpha\;\tilde{p}_{pe}, R_{e}\right)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  r_{pe} \sim \operatorname{DirichletMultinomial}\left(\alpha\;\tilde{p}_{pe}, R_{e}\right)
+\end{equation}
+
+Q: /What if there are several polls in one day?/
+
+Q: /How do we handle uncertain choices here? Refer to [[id:155e7a77-7c6d-40ec-ad7d-69078cb19af6][What can we say from one poll?]]  /
+
+
+** IDEA Why not use a Dirichlet-Dirichlet distribution instead of Dirichlet-Multinomial distribution since we get the results as % :noexport:
+** IDEA Learn the GP lengthscale :noexport:
