@@ -26,6 +26,7 @@ colors = {
     "Roussel": "#DD1C1A",
     "Mélenchon": "#E85D75",
     "Hidalgo": "#FF7F11",
+    "Taubira": "#FF7F11",
     "Jadot": "#B2C9AB",
     "Montebourg": "#FF7F11",
     "Macron": "#748CAB",
@@ -40,6 +41,19 @@ colors = {
 }
 #+end_src
 
+* Liens utiles
+
+Lien vers les pages présidentielles 2022 des instituts de sondage:
+ - [[https://presidentielle2022.bva-group.com/intentions-vote/][BVA]]
+ - [[http://www.odoxa.fr/sondages/dispositif-presidentielle-2022/][Odoxa]]
+ - [[https://elabe.fr/tag/presidentielle-2022/][Elabe]]
+ - [[https://www.opinion-way.com/fr/sondage-d-opinion/sondages-publies/politique/presidentielle-2022/2022.html][Opinionway]]
+ - [[https://cluster17.com/intentions-de-votes-des-clusters-presidentielle-2022/][Cluster 17]]
+ - [[https://www.ipsos.com/fr-fr/search?search=Pr%C3%A9sidentielle%202022][Ipsos]]
+ - [[https://www.ifop.com/presidentielle-2022/][Ifop]]
+ - [[https://harris-interactive.fr/opinion_polls/barometre-dintentions-de-vote-pour-lelection-presidentielle-de-2022-vague-28/][Harris]]
+
+Voir aussi le [[https://www.commission-des-sondages.fr/notices/][site de la Commission des Sondages]].
 
 * Décembre 2021
 ** Odoxa 09.12
@@ -391,7 +405,6 @@ filename
 #+attr_org: :width 500
 #+RESULTS:
 [[file:/tmp/babel-3mBQmE/figureQeoqFc.png]]
-
 
 ** Pairwise comparisons :viz:
 [2021-12-14 Tue]
@@ -1882,3 +1895,210 @@ filename
 
 #+RESULTS:
 [[file:/tmp/babel-9JwRqu/Rv87PI.png]]
+* Janvier 2022
+
+Les rollings on fait leur entrée. Ils consistent à interroger chaque un nombre donné d'inscrits sur les listes électorales, et publier les résultats des X derniers jours. Les échantillons n'étant pas indépendants nous ne pouvons pas considérer les points successives à moins de modéliser les cohortes:
+
+
++-----+-----+-----+
+| J-4 | J-3 | J-2 |  Rolling à J-2
++-----+-----+-----+
+      +-----+-----+-----+
+      | J-3 | J-2 | J-1 |  Rolling à J-1
+      +-----+-----+-----+
+            +-----+-----+-----+
+            | J-2 | J-1 | J   |  Rolling le jour J
+            +-----+-----+-----+
+
+    ^     ^    ^      ^    ^
+
+
+    Ici nous ne considérerons que les échantillons indépendants, c'est-à-dire un point tous les X jours pour avoir des cohortes indépendantes.
+
+** Cluster17
+:PROPERTIES:
+    :BEGIN: 11/01/2021
+    :END: 15/01/2021
+    :BASE: inscrits
+:END:
+
+#+begin_src python :session :results silent
+num_exprimes = 2558
+precision = .5
+resultats = {
+    "Arthaud": 0.5,
+    "Poutou": 1.5,
+    "Roussel": 2,
+    "Mélenchon": 12.5,
+    "Montebourg": 1,
+    "Hidalgo": 2,
+    "Jadot": 4.5,
+    "Taubira": 5.5,
+    "Macron": 22.5,
+    "Pécresse": 13,
+    "Lassalle": 1,
+    "Asselineau": 1.5,
+    "Dupont-Aignan": 2.5,
+    "Philippot": 1.5,
+    "Le Pen": 14.5,
+    "Zemmour": 14,
+}
+print(sum(list(resultats.values())))
+assert sum(list(resultats.values())) == 100
+#+end_src
+
+#+begin_src python :session :async true
+results_r = np.array(list(resultats.values())) / 100
+precision_r = precision / 100
+
+with pm.Model() as multinomial:
+    prior_intentions = np.array(list(resultats.values())) * 0.1
+    p = pm.Dirichlet("intentions", prior_intentions, shape=(1,len(prior_intentions)))
+    n = pm.Multinomial("respondants", num_exprimes, p, shape=(1, len(prior_intentions)))
+    r = n / num_exprimes
+    r_obs = pm.Uniform('observed', r-precision_r, r+precision_r, observed=results_r)
+
+    trace = pm.sample()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src python :session :results file :exports results :var filename=(org-babel-temp-file "figure" ".png")
+import arviz as az
+import matplotlib.pyplot as plt
+
+with multinomial:
+    az.plot_trace(trace)
+    plt.savefig(filename, bbox_inches='tight')
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/figureojReTN.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "figure" ".png")
+intentions_r = {k: trace['intentions'][:,0, i] for i,k in enumerate(resultats.keys())}
+fig = src.intentions.plot(
+    intentions_r,
+    colors,
+    "15/01/2022",
+    "Cluster17 pour Marianne",
+    title="Intentions de vote au premier tour",
+    sample_size=num_exprimes,
+    base="Inscrits",
+    logo_path="~/org/roam/images/logo.png"
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/figureFZzMy7.png]]
+#+ATTR_ORG: :width 600
+[[file:/tmp/babel-XcWuFV/figureqJ3sa8.png]]
+
+*** Mélenchon au 2nd tour?
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Mélenchon",
+    "Pécresse",
+    num_points=100
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/MTcenv.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Mélenchon",
+    "Le Pen",
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/hyd8Bw.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Mélenchon",
+    "Zemmour",
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/NenJUu.png]]
+
+
+*** La gauche
+
+A droite tout le monde est dans un mouchoir de poche.
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Mélenchon",
+    "Taubira",
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/lKy2Zv.png]]
+
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Taubira",
+    "Jadot",
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/hErGEM.png]]
+
+#+begin_src python :session :results file :exports both :var filename=(org-babel-temp-file "" ".png")
+fig = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    "Hidalgo",
+    "Roussel",
+    num_points=100,
+    seed=0
+)
+plt.savefig(filename, bbox_inches="tight")
+filename
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/babel-XcWuFV/mzWcQ5.png]]
+
+** TODO Plot that shows the probability to be 1st, 2nd, 3rd, etc for each candidate

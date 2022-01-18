@@ -205,6 +205,7 @@ def plot_pair(
     title="Différence d'intentions de vote au 1er tour",
     ticks=None,
     num_points=100,
+    seed=0,
 ):
     """Plot pairwise difference in voting intentions."""
     srng = np.random.default_rng(0)
@@ -219,7 +220,7 @@ def plot_pair(
     # Attribute position to each posterior sample
     limit = np.ceil(100 * np.max(abs(diff)))
 
-    a = generate_blue_noise((2 * limit, 3), 0.2, seed=0)
+    a = generate_blue_noise((2 * limit, 3), 0.2, seed=seed)
     a[:, 0] = a[:, 0] - limit
     a[:, 1] = a[:, 1] + 0.1
 
