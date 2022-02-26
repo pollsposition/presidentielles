@@ -1,9 +1,12 @@
-from math import cos, sin, floor, sqrt, pi, ceil
+from math import ceil, cos, floor, pi, sin, sqrt
 
 import imageio
 import matplotlib.gridspec as grid_spec
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.collections import PolyCollection
+from matplotlib.gridspec import GridSpec
+from scipy.spatial import Voronoi
 
 
 def plot(
@@ -265,8 +268,6 @@ def plot_pair(
         ax.axvline(t, ymin=0.1, color=colors[c1], lw=0.5)
         ax.axvline(-t, ymin=0.1, color=colors[c2], lw=0.5)
 
-    print(ticks)
-
     ax.set_xlim(-limit - 3, limit + 3)
     ax.set_ylim(-0.3, 3.2)
 
@@ -437,6 +438,135 @@ def plot_pair(
         color="lightgray",
     )
     return fig
+
+
+def add_mosaic(ax, img, p, granularity=50, bbox=[0, 0, 1, 1]):
+    """Represent probability showing tiles on top of images."""
+
+    height, width, _ = img.shape
+    P_success = np.exp(p - 1.0)
+    tiles = generate_mosaic(width, height, P_success)
+
+    ax.imshow(img)
+    ax.add_collection(tiles)
+    ax.set_xlabel(
+        f"{100 * p:.0f}%", fontsize=20, fontweight="light", fontname="Futura PT"
+    )
+    ax.axes.get_yaxis().set_ticks([])
+    ax.axes.get_xaxis().set_ticks([])
+    spines = ["top", "right", "left", "bottom"]
+    for s in spines:
+        ax.spines[s].set_visible(False)
+
+
+def add_title(ax, title="", subtitle=""):
+    ax.text(
+        0,
+        0.22,
+        title,
+        fontsize=25,
+        fontweight="bold",
+        fontname="Futura PT",
+    )
+    ax.text(
+        0,
+        0.1,
+        subtitle,
+        fontsize=10,
+        fontweight="normal",
+        fontname="Futura PT",
+        color="darkgray",
+    )
+    ax.axis("off")
+
+
+def add_colophon(ax, explanation=""):
+    ax.text(
+        1.0,
+        0.6,
+        "Tracé avec soin par @pollsposition",
+        ha="right",
+        va="bottom",
+        fontsize=10,
+        fontweight="normal",
+        fontname="Futura PT",
+        color="darkgray",
+    )
+    ax.text(
+        1.0,
+        0.50,
+        explanation,
+        ha="right",
+        va="bottom",
+        fontsize=8,
+        fontweight="normal",
+        fontname="Futura PT",
+        color="darkgray",
+    )
+    ax.axis("off")
+
+
+def plot_win(probabilities, images, date="", title="Probabilité d'accéder au 2nd tour"):
+
+    if len(probabilities) != len(images):
+        raise ValueError("You must provide as many images as probabilities")
+
+    gs = GridSpec(3, len(probabilities), height_ratios=[0.1, 1, 0.1])
+    fig = plt.figure(figsize=(12, 8))
+
+    ax = fig.add_subplot(gs[0, :])
+    add_title(
+        ax, title="Probabilité d'accéder au 2nd tour", subtitle=f"Prédictions du {date}"
+    )
+
+    for i, (p, img) in enumerate(zip(probabilities, images)):
+        ax = fig.add_subplot(gs[1, i])
+        add_mosaic(ax, img, p, 20)
+
+    ax = fig.add_subplot(gs[2, :])
+    add_colophon(
+        ax,
+        "Les probabilités correpondent à la proportion de nos 100,000 simulations où le candidat accède au 2nd tour",
+    )
+
+    gs.update(hspace=-1.1)
+
+    return fig
+
+
+def generate_mosaic(width, height, p, granularity=50):
+    """Generate a tiling of white and transparent cells."""
+
+    sample_points = generate_blue_noise(
+        (width, height), radius=width / granularity, seed=0
+    )
+    sample_points = np.append(
+        sample_points, [[+999, +999], [-999, +999], [+999, -999], [-999, -999]], axis=0
+    )
+
+    voronoi = Voronoi(sample_points)
+    polygons, colors = [], []
+    for i, region in enumerate(voronoi.regions):
+        if -1 in region:
+            continue
+        polygon = [list(voronoi.vertices[i]) for i in region]
+        if len(polygon) <= 0:
+            continue
+        polygons.append(polygon)
+        colors.append([1, 1, 1, 1])
+
+    N = len(voronoi.regions)
+    rng = np.random.RandomState(0)
+    visible = rng.choice(range(N), size=int(p * N), replace=False)
+    for j in visible:
+        try:
+            colors[j] = np.array([0, 0, 0, 0])
+        except:
+            pass
+
+    colors = np.array(colors)
+    tiles = PolyCollection(polygons, linewidth=0.5, facecolor=colors, edgecolors=colors)
+    return tiles
 
 
 def generate_blue_noise(shape, radius, k=32, seed=None):
