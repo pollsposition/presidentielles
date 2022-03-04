@@ -1,50 +1,60 @@
 #+TITLE: Pollsposition
 #+SUBTITLE: Bayesian statistics and French politics
 #+AUTHOR: Rémi Louf, Alexandre Andorra
+#+DATE: 2022-03-04
+#+EMAIL: remilouf@gmail.com
+
 #+STARTUP: hideblocks overview
 #+OPTIONS: \n:t H:4 toc:2
+
+#+SETUPFILE: latex-setup.org
+
 #+PROPERTY: header-args:latex :results raw :exports results
-#+PROPERTY: header-args:python :eval no-export :noweb strip-export
-#+LATEX_HEADER: \usepackage{enumitem}
-#+LATEX_HEADER: \setlist{noitemsep}
-#+filetags: :statistics:public:polls:pollsposition:
+#+PROPERTY: header-args:python :eval no-export :noweb strip-export :exports none
+
 #+begin_abstract
 Blablabla
 #+end_abstract
 
 Every pre-election poll tries to answer the question:
 
-/If the election were to happen the following weekend, who would people be voting for?/
+/If the election were to happen now, who would people be voting for?/
 
-We note $\boldsymbol{v}$ the vector that contains the number of people that will vote for either of the $c$ candidates. The *true* value of $\boldsymbol{v}$ is unknow and could only be obtained if we held elections the following weekend. People (including the media) usually assume that $\boldsymbol{v}$ is the quantity reported by polling institutes. It is not.
+While the media and people want an answer to the question:
 
-Here I try to show how the voting intentions $\boldsymbol{v}$ related to the answers $\boldsymbol{n}$
-Here we will try to infer the value of $\boldsymbol{v}$. To do so we need to mathematically relate $\boldsymbol{v}$ to quantities that are reported in opinion polls.
+/Who will people be voting for on election day?/
+
+We note $\boldsymbol{v}_t$ the vector that contains the number of people that would vote for either of the $c$ candidates at time $t$. The *true* value of $\boldsymbol{v}_t$ is unknow and could only be obtained if we held elections. People (including the media) usually comment on polls results as if $\boldsymbol{v}_t$ were the quantity reported by polling institutes. Worse, they sometimes comment as if the polls reported $\boldsymbol{v}_{\tau}$ where $\tau$ is election day. This is not the case.
+
+In this book we will show how the voting intentions $\boldsymbol{v}_t$ relate to the answers $\boldsymbol{n}_t^h$ reported by polling institutes $h \in \left[1, \mathcal{H}]$. In other words, we will try to /infer/ the value of $\boldsymbol{v}_t$ from the results $\boldsymbol{n}_t^h$. First we will see what information we can extract from answers to a single poll, and then move on to polling information from several poll to better account for the uncertainty in $\boldsymbol{v}_t$. We will then show how, using additional information, we can try to /predict/
 
 * What can a single poll say?
+
+In the following we are concerned only with the result of a single poll. We will thus drop the time index $t$ and the pollster index $h$.
+
 ** Voting intentions
 
-Pollsters ask a series of questions to people who are registered to vote. Among which, they ask people who they would vote for should the elections happen the following weekend. As a result we get:
+Pollsters ask a series of questions to people who are registered to vote. Among which, they ask people who they would vote for should the elections happen the following weekend. As a result they generally report :
 
 #+begin_src latex
 \begin{equation}
-    \mathbf{n} = \left(n_1,\dots,n_c, n_{nr}\right),\: \sum_i n_i = N
+    \mathbf{n} = \left(n^1,\dots,n^c, n^{nr}\right),\: \sum_c n^c = N
 \end{equation}
 #+end_src
 
 #+RESULTS:
 \begin{equation}
-    \mathbf{n} = \left(n_1,\dots,n_c, n_{nr}\right),\: \sum_i n_i = N
+    \mathbf{n} = \left(n^1,\dots,n^c, n^{nr}\right),\: \sum_i n^i = N
 \end{equation}
 
 
-a vector that contains the number of people who designated each candidate. $n_{nr}$ is the number of people who chose to not respond.
+a vector that contains the number of people who designated each candidate. $n^{nr}$ is the number of people who chose to not respond.
 
-Very often the $n_i$ are not given in the pollster's released reports, and we are given instead $\tilde{r_i}$, the rounded portion of respondants who would vote for $i$. The rounding process is such that
+Very often the $n^i$ are not given in the pollster's released reports, and we are given instead $\tilde{r}^{\,i}$, the rounded portion of respondants who would vote for $i$. The rounding process is such that
 
 #+begin_src latex
 \begin{equation}
-  r_i \in [\tilde{r}_i -\delta, \tilde{r}_i + \delta]
+  r^c \in [\tilde{r}^{\,c} -\delta, \tilde{r}^{\,c} + \delta]
 \end{equation}
 #+end_src
 
@@ -57,7 +67,7 @@ where
 
 #+begin_src latex
 \begin{equation}
-  r_i = \frac{n_i}{N-n_{nr}}
+  r^c = \frac{n^c}{N-n_{nr}}
 \end{equation}
 #+end_src
 
@@ -94,7 +104,24 @@ where $\sum_i p_i = 1$ and each $p_i$ represents the "true" probability to vote 
 
 Let us consider a [[https://elabe.fr/wp-content/uploads/2021/12/presidentielle-2022.pdf][somewhat controversial poll from Elabe]] where Pécresse was given 20% of the vote intentions while she was around 10% a few weeks back. I reproduce the data below :
 
-#+begin_src python :session
+#+CAPTION: This ELABE poll released on December, 7th 2021 sparked controversy as Valérie Pécresse seemed to be closing in on Emmanuel Macron. Base: 965 people who are sure to vote and expressed an opinion. The original results can be found on [[https://elabe.fr/wp-content/uploads/2021/12/presidentielle-2022.pdf][ELABE's website]].
+| Candidate     | Voting intentions |
+|---------------+-------------------|
+| Arthaud       |                 1 |
+| Dupont-Aignan |                 2 |
+| Hidalgo       |                 3 |
+| Jadot         |                 7 |
+| Lassalle      |                 2 |
+| Le Pen        |                15 |
+| Macron        |                23 |
+| Mélenchon     |                 8 |
+| Montebourg    |                 2 |
+| Pécresse      |                20 |
+| Poutou        |                 2 |
+| Roussel       |                 1 |
+| Zemmour       |                14 |
+
+#+begin_src python :session :results raw
 # Results are given for certain to vote + expressed intention
 sample_size = int(1354 * (0.57+0.15+0.10) * (1-0.13))
 results = {
@@ -154,9 +181,8 @@ plt.savefig(filename, bbox_inches='tight')
 filename
 #+end_src
 
+#+ATTR_ORG: :width 500
 #+RESULTS:
-[[file:./images/what-can-we-say-trace.svg]]
-
 
 We can now look at the raw voting intentions inferred from the poll's results:
 
@@ -341,8 +367,6 @@ Ce qui a pour effet de resserer la compétition. En particulier on voit la proba
     return fig
 #+end_src
 
-#+RESULTS:
-
 #+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-raw.svg"
 intentions = {
     candidate: trace["intentions"][:, i] for i, candidate in enumerate(results)
@@ -386,7 +410,6 @@ filename
 
 #+ATTR_ORG: :width 500
 #+RESULTS:
-[[file:images/what-can-we-say-raw.svg]]
 
 #+begin_src python :session :exports none
 # And we can compute the 95% intervals:
@@ -398,7 +421,71 @@ for i, c in enumerate(intentions.keys()):
 
 #+RESULTS:
 
+
 ** Participation
+
+Not everyone who answers polls plans on going to vote, and we would like to estimate the participation level at the election. Among $N$ people interrogated and registered to vote, we write $N_v$ the number of people certain to vote $N_n$ the number of people certain to not vote and $N_i$ the number of undecided people so that
+
+#+begin_src latex
+\begin{equation}
+  N = N_v + N_n + N_i
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  N = N_v + N_n + N_i
+\end{equation}
+
+Les $n_i$ personnes se divisent en d'autres sous-catégories $c=1, \dots,C$. En notant $\boldsymbol{p} = \left(p^a, p^{i}_1, \dots, p^{i}_C, p^v\right)$ la probabilité d'appartenir à chaque catégorie nous pouvons écrire en toute généralité:
+
+#+begin_src latex
+\begin{equation}
+  \boldsymbol{n} \sim \operatorname{Multinomial}(\boldsymbol{p}, N)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+  \boldsymbol{n} \sim \operatorname{Multinomial}(\boldsymbol{p}, N)
+\end{equation}
+
+Chaque sous-catégorie d'indécis regroupe des personnes dont les probabilités d'aller son similaires, et croissantes. Certains instituts demandent aux interrogés d'estimer leur probabilité d'aller voter (Elabe, Ipsos, Opinionway), d'autres leur demande de la qualifier (Ifop, Harris).
+
+On note $\theta_i$ la probabilité d'aller voter d'un indécis. On suppose que la distribution de $\theta_i$ suit un loi Beta
+
+#+begin_src latex
+\begin{equation}
+ \theta_{i}  \sim \operatorname{Beta}(\alpha, \beta)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \theta_{i}  \sim \operatorname{Beta}(\alpha, \beta)
+\end{equation}
+
+De sorte que s'il y a $C$ sous-catégories d'indécis, la probabilité $p_c^i$ d'être indécis et d'appartenir à la sous-catégorie $c$ est donnée par:
+
+#+begin_src latex
+\begin{equation}
+ p_{c}^{i} = \int_{(c-1)/C}^{c/C} P(\theta_{i}=x|\alpha, \beta) \mathrm{d}x
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ p_{c}^{i} = \int_{(c-1)/C}^{c/C} P(\theta_{i}=x|\alpha, \beta) \mathrm{d}x
+\end{equation}
+
+Nous pouvons ensuite utiliser le modèle pour estimer les paramètres $p_a$, $p_v$, $\alpha$, $\beta$ qui vont nous permettre ensuite d'estimer le taux de participation moyen et autres quantités d'intérêt.
+
+* Données
+
+Bien évidemment, les questions posées par les instituts de sondages ne sont pas du tout normalisées; nous avons commencé à [[https://github.com/pollsposition/data/issues/11][recenser les questions posées]]. Néanmoins, même si les détails des questions sont différents (et donc bien souvent le nombre de catégories), il sera possible d'utiliser un *modèle hiérarchique* en attribuant un prior commun aux paramètres $\alpha$, $\beta$, $p_a$, $p_v$.
+
+
+
 ** When people are uncertain
 
 The previous curves thus makes the underlying assumption that every unsure people will stick to their answer. But some people will change their mind. They are even more likely to do so the further we are from the election.
@@ -456,7 +543,6 @@ filename
 
 #+ATTR_ORG: :width 500
 #+RESULTS:
-[[file:images/what-can-we-say-abstention.svg]]
 
 
 #+begin_src python :session :exports none
@@ -599,7 +685,6 @@ filename
 
 #+attr_org: :width 500
 #+RESULTS:
-[[file:images/what-can-we-say-random.svg]]
 
 In the following figure we go one step further. We divide people who are certain to vote but did not give any name uniformly among the candidates. We observed an increased uncertainty and results that are less clear cut:
 
@@ -633,8 +718,6 @@ filename
 
 #+attr_org: :width 400
 #+RESULTS:
-[[file:images/what-can-we-say-all-random.svg]]
-
 
 *** Constant fraction of undecided
 
@@ -678,7 +761,6 @@ filename
 
 #+attr_org: :width 400
 #+RESULTS:
-[[file:./images/what-can-we-say-constant-fraction.svg]]
 
 
 #+begin_src python :session :exports none
@@ -794,7 +876,6 @@ filename
 
 #+attr_org: :width 600
 #+RESULTS:
-[[file:images/what-can-we-say-lepen-zemmour-indecis.svg]]
 
 
 #+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-lepen-pecresse-indecis.svg"
@@ -806,7 +887,6 @@ filename
 
 #+attr_org: :width 500
 #+RESULTS:
-[[file:images/what-can-we-say-lepen-pecresse-indecis.svg]]
 
 
 #+begin_src python :session :results file :exports results :var filename="images/what-can-we-say-melenchone-jadot-indecis.svg"
@@ -818,7 +898,6 @@ filename
 
 #+attr_org: :width 600
 #+RESULTS:
-[[file:images/what-can-we-say-melenchone-jadot-indecis.svg]]
 
 *** $\text{Undecided}^2$
 
@@ -860,6 +939,7 @@ def divide_bandwagon(intentions_certain, intentions_uncertain):
 #+end_src
 
 *** TODO Check the calculations and plot `undecided^2` :noexport:
+
 * Polls and biases
 
 Election polls also suffer from non-sampling errors. This error can manifest in a biased estimator, as well as a higher variance than would be expect from pure sampling errors.
@@ -899,90 +979,269 @@ On 538:
   2. *House effect* adjustment which detects polls that consistently leans
      towards a party and consistently have fewer undecided voters.
   3. *Timeline adjustment* which is based on polls' recency
+
+
+* Time evolution
+:PROPERTIES:
+:CUSTOM_ID: sec:time-evolution
+:END:
+
+Pollsters will poll their population samples several times over the course of the political campaign. We can estimate the latent intentions independently for every time step, and this is probably correct when the polling frequency is low. As the elections approaches, most pollsters will provide results almost on a daily basis. It is however very unlikely that voting intentions will exhibit large swings as many people are almost certain of who they will vote for (*to model*).
+
+We can use this remark to improve our intention estimates : we can assume that intention evolves /smoothly/ over time, so very sharp evolution can be excluded. We will thus note that the current candidate support is a /smooth/ function of the candidate support at previous time steps:
+
+#+begin_src latex
+\begin{align*}
+ \boldsymbol{y}_{t} &\sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{t}, S_{t}\right)\\
+  \boldsymbol{\pi}_t &\sim \operatorname{Dirichlet}\left(\boldsymbol{p}_t \right)\\
+  \boldsymbol{p}_t&= \operatorname{Softmax}(\boldsymbol{\mu}_t)\\
+  \boldsymbol{\mu}_t &= f\left(\boldsymbol{\mu}_0, \dots, \boldsymbol{\mu}_{t-1} \right)
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+ \boldsymbol{y}_{t} &\sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{t}, S_{t}\right)\\
+  \boldsymbol{\pi}_t &\sim \operatorname{Dirichlet}\left(\boldsymbol{p}_t \right)\\
+  \boldsymbol{p}_t&= \operatorname{Softmax}(\boldsymbol{\mu}_t)\\
+  \boldsymbol{\mu}_t &= f\left(\boldsymbol{\mu}_0, \dots, \boldsymbol{\mu}_{t-1} \right)
+\end{align*}
+
+We will explore several options for the time-dependence
+
+***** TODO Show how adding a random walk compares to estimating the latent intentions separately.
+***** TODO Show the "reservoir" of people which prevent larges swings with small model.
+
+** Random walk
+
+Markov process. Value at one time step only depends on the value at the previous time step.
+
+#+begin_src latex
+\begin{align*}
+  \boldsymbol{\mu}_{t}  &= \boldsymbol{\mu}_{t-1} + \boldsymbol{\epsilon} \\
+  \boldsymbol{\epsilon} &\sim \operatorname{MvNormal}(\boldsymbol{0}, \Sigma)
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+  \boldsymbol{\mu}_{t}  &= \boldsymbol{\mu}_{t-1} + \boldsymbol{\epsilon} \\
+  \boldsymbol{\epsilon} &\sim \operatorname{MvNormal}(\boldsymbol{0}, \Sigma)
+\end{align*}
+
+where $\Sigma$ is the covariance matrix. We commonly assume that $\Sigma$ has a diagonal structure, i.e. that there is no correlation in the time evolution of the score of different political families.
+
+***** TODO What is the interpretation for non-diagonal elements of $\Sigma$?
+
+** Gaussian Processes
+
+We model the relation between the consecutive values of the vector $\boldsymbol{\lambda}_t$ with gaussian processes with the standard square exponential kernel:
+
+#+begin_src latex
+\begin{align*}
+\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
+K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
+K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
+\end{align*}
+
+Where $\boldsymbol{\theta}$ is the /mean support/ for each party, $\Sigma$ is the /covariance matrix/ between the different candidates, and $\tau_i$ the /typical timescale/ over which the support for candidate $i$ changes. We currently assume that the covariance matrix is diagonal, i.e. that the parties' support evolve independently:
+
+#+begin_src latex
+\begin{equation*}
+\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
+\end{equation*}
+#+end_src
+
+#+RESULTS:
+\begin{equation*}
+\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
+\end{equation*}
+
+***** TODO What are we using for $\boldsymbol{\theta}$ in this model?
+***** TODO How does it work when we are using several timescales?
+***** TODO What do timescales actually mean? Can we relate it to the amount of variation for the candidate support?
+***** TODO How would you interpret the non diagonal elements of $\Sigma$? Can that be seen as support transfers?
+***** TODO Try the other mean-reverting kernel, the Ornstein-Uhlenbeck kernel
+***** TODO I don't see why the process should be stationary, try the Wiener kernel?
+
 * Poll aggregation
+:PROPERTIES:
+:CUSTOM_ID: sec:aggregation
+:END:
+
+We model the results $\boldsymbol{y}^{h}_t$ of the poll released by institute $h \in \left\{1 \dots N_h \right\}$ for candidates $c \in \left\{1 \dots N_c \right\}$ at time $t \in \left\{1 \dots T_e\right\}$ with a $N_c$ -dimensional random variable that follows a multinomial distribution:
+
+#+begin_src latex
+\begin{equation}
+ \boldsymbol{y}_{t}^{h} \sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{t}^{h}, S_{t}^{h}\right)
+\end{equation}
+#+end_src
+
+#+RESULTS:
+\begin{equation}
+ \boldsymbol{y}_{t}^{h} \sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{t}^{h}, S_{t}^{h}\right)
+\end{equation}
+
+Where $S_{t}^h$ is the sample size, and $\boldsymbol{\pi}_{t}^h$ is usually interpreted and reported as the /voting intentions/. The voting intentions must sum to one, and we place a Dirichlet prior on the voting intentions:
+
+#+begin_src latex
+\begin{equation*}
+\boldsymbol{\pi}_{t}^{h} \sim \operatorname{Dirichlet}(\alpha\;\boldsymbol{p}_{t}^{h})
+\end{equation*}
+#+end_src
+
+#+RESULTS:
+\begin{equation*}
+\boldsymbol{\pi}_{t}^{h} \sim \operatorname{Dirichlet}(\alpha\;\boldsymbol{p}_{t}^{h})
+\end{equation*}
+
+where $\alpha$ is a /concentration parameter/ that accounts for overdispersion in the data:
+
+#+begin_src latex
+\begin{equation*}
+  \alpha \sim \operatorname{InverseGamma}(1000, 200)
+\end{equation*}
+#+end_src
+
+#+RESULTS:
+\begin{equation*}
+  \alpha \sim \operatorname{InverseGamma}(1000, 200)
+\end{equation*}
+
+the first parameter of the $\operatorname{InverseGamma}$ distribution can be interpreted as the polls' sample size and the second as thei standard deviation. $\boldsymbol{p}_{t}^{h}$ is a vector given by
+
+#+begin_src latex
+\begin{equation*}
+\boldsymbol{p}_{t}^{h} = \operatorname{Softmax}(\boldsymbol{\mu}_{t}^{h})
+\end{equation*}
+#+end_src
+
+#+RESULTS:
+\begin{equation*}
+\boldsymbol{p}_{t}^{h} = \operatorname{Softmax}(\boldsymbol{\mu}_{t}^{h})
+\end{equation*}
+
+where $\boldsymbol{\mu}_{t}^{h}$ is a vector that contains the /latent popularities/ of the different candidates. The poll results we observe are thus a function of the sample size, and this latent popularity.
+
+This vector can be further decomposed in several components and we will write
+
+#+begin_src latex
+\begin{equation*}
+ \boldsymbol{\mu}_{t}^{h} = \boldsymbol{\lambda}_{t} + \tilde{\boldsymbol{\eta}} + \boldsymbol{\eta}^h
+\end{equation*}
+#+end_src
+
+#+RESULTS:
+\begin{equation*}
+ \boldsymbol{\mu}_{t}^{h} = \tilde{\boldsymbol{\lambda}} + \boldsymbol{\lambda}_{t} + \tilde{\boldsymbol{\eta}} + \boldsymbol{\eta}^h
+\end{equation*}
+
+where $\boldsymbol{\lambda}_t$ is the time-varying latent support of each candidate, $\boldsymbol{\eta}^h$ the bias of the political institute $h$ towards the candidates (house effect), and $\tilde{\boldsymbol{\eta}}$ the polling market's bias towards the different candidates.
+
+** Time-varying latent support
+
+A core quantity is the support for each candidate in the election $\boldsymbol{\lambda}_t$, and its evolution as new information (polls, special events, update in the fundamental data, etc) arrives.
+
+We model the relation between the consecutive values of the vector $\boldsymbol{\lambda}_t$ with gaussian processes with the standard square exponential kernel:
+
+#+begin_src latex
+\begin{align*}
+\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
+K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
+\end{align*}
+#+end_src
+
+#+RESULTS:
+\begin{align*}
+\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
+K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
+\end{align*}
+
+Where $\boldsymbol{\theta}$ is the /mean support/ for each party, $\Sigma$ is the /covariance matrix/ between the different candidates, and $\tau_i$ the /typical timescale/ over which the support for candidate $i$ changes. We currently assume that the covariance matrix is diagonal, i.e. that the parties' support evolve independently:
+
+#+begin_src latex
+\begin{equation*}
+\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
+\end{equation*}
+#+end_src
+
+#+RESULTS:
+\begin{equation*}
+\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
+\end{equation*}
+
+***** TODO What are we using for $\boldsymbol{\theta}$ in this model?
+***** TODO How does it work when we are using several timescales?
+***** TODO What do timescales actually mean? Can we relate it to the amount of variation for the candidate support?
+***** TODO How would you interpret the non diagonal elements of $\Sigma$? Can that be seen as support transfers?
+***** TODO Try the other mean-reverting kernel, the Ornstein-Uhlenbeck kernel
+***** TODO I don't see why the process should be stationary, try the Wiener kernel?
+
+** House effects
+
+*** House effect
+
+The systematic differences betweent pollsters [538 pollster rating] need to enter the model. Pollsters differ in the ways they constitute their panel and the way they adjust results. We can separate house effects in two elements.
+
+Each pollster also has its idiosyncratic bias regarding the different families:
+
+#+begin_src latex
+\begin{equation*}
+ \eta^{hc} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation*}
+#+end_src
+
+#+RESULTS:
+\begin{equation*}
+ \eta^{hc} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation*}
+
+***** TODO Should this enter the variance of the estimate instead?
+***** TODO Why are we using a =ZeroSumNormal= distribution?
+
+*** Poll bias
+
+In an ideal world the institutes' biases cancel each other off: an institute's overestimation of the far-right's score would be balanced by another institutes' underestimation. This is what would happen in the limit of a large number of polling institude should the biases be randomly distributed. But biases are not always randomly distributed, as shown in [Shirai-Mehr et al 2018]: there is often a measurable /polling market bias/.
+
+We can measure it on past elections since we have the election results to compare the polls to, and use the model introduced in [S-M 2018]:
+
+#+begin_src latex
+\begin{align*}
+  y_{i} &\sim \operatorname{Normal}(p_{i}, \sigma_{i}^{2})\\
+  p_{i} &= \operatorname{logit}(v_{i}) + \alpha_{i} + \beta_{i} \, t\\
+\end{align*}
+#+end_src
+
+where $v_i$ is the final vote share and $\alpha_i$ thus represents the market bias. The authors use a hierarchical structure on the parameters $\alpha_i$, $\beta_j$ and $\tau_j$ which respectively share the same prior distribution centered on 0.
+
+Failure to account for correlated poll errors will lead to improper estimates (and later on, predictions). We thus need to account for this in our models. One way (which is visible what 538 does [ref needed]) is to "correct" the different candidates' score for the correlated error observed on past elections.
+
+In the section
+
+***** TODO Measure this bias on past election data
 
 * Predict the result of the election
-
-Dimensions:
-- Elections $e = 1, \dots, E$
-- Parties $p = 1, \dots, P$
-- Pollsters $h=1, \dots, H$
-- Time $t = t_0-N, \dots, t_0$
+:PROPERTIES:
+:CUSTOM_ID: sec:predict
+:END:
 
 ** Poll aggregator
 
-We model the results of the poll released by institute $h$ at time $t$ as a $f$ -dimensional random variable $N_{c,t}$ that is assumed to follow a multinomial distribution:
-
-#+begin_src latex
-\begin{equation}
- \boldsymbol{N}_{c,t} \sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{ct}, S_{ct}\right)
-\end{equation}
-#+end_src
-
-#+RESULTS:
-\begin{equation}
- \boldsymbol{N}_{c,t} \sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{ct}, S_{ct}\right)
-\end{equation}
-
-Where $S_{ct}$ is the sample size, and $\boldsymbol{\pi}_{ct}$ is usually interpreted and reported as the /voting intentions/. The voting intentions must sum to one, and we place a Dirichlet prior on the voting intentions:
-
 #+begin_src latex
 \begin{equation*}
-\boldsymbol{\pi}_{ht} \sim \operatorname{Dirichlet}(\alpha^{p}\;\boldsymbol{p}_{ht})
+ \mu^{hec}_t = \lambda^{c}_t + \tilde{\lambda}^{c} + \beta_U\;U_t + \eta^{hec} + \tilde{\eta}^f
 \end{equation*}
 #+end_src
 
 #+RESULTS:
 \begin{equation*}
-\boldsymbol{\pi}_{ht} \sim \operatorname{Dirichlet}(\alpha^{p}\;\boldsymbol{\mu}_{ht})
-\end{equation*}
-
-where $\alpha^p$ is a /concentration parameter/ that accounts for overdispersion in the data:
-
-#+begin_src latex
-\begin{equation*}
-  \alpha^{p} \sim \operatorname{InverseGamma}(1000, 200)
-\end{equation*}
-#+end_src
-
-#+RESULTS:
-\begin{equation*}
-  \alpha^{p} \sim \operatorname{InverseGamma}(1000, 200)
-\end{equation*}
-
-and $\boldsymbol{p}_{ht}$ is a vector given by
-
-#+begin_src latex
-\begin{equation*}
-\boldsymbol{p}_{ht} = \operatorname{Softmax}(\boldsymbol{\mu}_{ht})
-\end{equation*}
-#+end_src
-
-#+RESULTS:
-\begin{equation*}
-\boldsymbol{p}_{ht} = \operatorname{Softmax}(\boldsymbol{\mu}_{ht})
-\end{equation*}
-
-where $\boldsymbol{\mu}_{ht} = \left(\mu_{ht1}, \dots \mu_{htf}\right)$ is a vector that contains the /latent popularities/ of the different political families. The poll results we observe are thus a factor of the sample size, and this latent popularity.
-
-Many factors can influence this value:
-- The time-varying popularity for the candidate $\lambda_{tf}$;
-- The baseline popularity of its political family $\tilde{\lambda}_{f}$;
-- Fundamental economic data, such as unemployment $U_t$. It is reasonable to assume that some families will do better than other when unemployment is, say, high.
-- House effect $\eta_{hf}$ that quantify each of the polling institute's bias when it comes to this family's results;
-- Poll bias $\tilde{\eta}_f$ which is the polling marker's bias towards a political family.
-
-So we write:
-
-#+begin_src latex
-\begin{equation*}
- \mu^{hf}_t = \lambda^{f}_t + \tilde{\lambda}^{f} + \beta_U\,U_t + \eta^{hf} + \tilde{\eta}^f
-\end{equation*}
-#+end_src
-
-#+RESULTS:
-\begin{equation*}
- \mu^{hf}_t = \lambda^{f}_t + \tilde{\lambda}^{f} + \beta_U\,U_t + \eta^{hf} + \tilde{\eta}^f
+ \mu^{hec}_t = \lambda^{c}_t + \tilde{\lambda}^{c} + \beta_U\;U_t + \eta^{hec} + \tilde{\eta}^f
 \end{equation*}
 
 ** Fundamentals model
@@ -1032,43 +1291,6 @@ We first assume that each political family $f$ has a baseline amount of popular 
 ***** TODO Why ZeroSumNormal here?
 
 *** Evolution during the election
-
-A core quantity is the support for each candidate in the election $\boldsymbol{\lambda}_t$, and its evolution as new information (polls, update in the fundamental data) arrives.
-
-An innovation of this model over previous models is the use of Gaussian Processes to model the time evolution of the vector $\boldsymbol{\lambda}_t$ with the standard square exponential kernel:
-
-#+begin_src latex
-\begin{align*}
-\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
-K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
-\end{align*}
-#+end_src
-
-#+RESULTS:
-\begin{align*}
-\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
-K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
-\end{align*}
-
-Where $\boldsymbol{\theta}$ is the /mean support/ for each party, $\Sigma$ is the /covariance matrix/ between the different candidates, and $\tau_i$ the /typical timescale/ over which the support for candidate $i$ changes. We currently assume that the covariance matrix is diagonal, i.e. that the parties' support evolve independently:
-
-#+begin_src latex
-\begin{equation*}
-\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
-\end{equation*}
-#+end_src
-
-#+RESULTS:
-\begin{equation*}
-\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
-\end{equation*}
-
-***** TODO What are we using for $\boldsymbol{\theta}$ in this model?
-***** TODO How does it work when we are using several timescales?
-***** TODO What do timescales actually mean? Can we relate it to the amount of variation for the candidate support?
-***** TODO How would you interpret the non diagonal elements of $\Sigma$? Can that be seen as support transfers?
-***** TODO Try the other mean-reverting kernel, the Ornstein-Uhlenbeck kernel
-***** TODO I don't see why the process should be stationary, try the Wiener kernel?
 
 ** House effects
 
