@@ -9,18 +9,26 @@
 
 #+SETUPFILE: latex-setup.org
 
-#+PROPERTY: header-args:latex :results raw :exports results
+#+PROPERTY: header-args:latex   :results raw :exports results
 #+PROPERTY: header-args:python :eval no-export :noweb strip-export :exports none
 
 #+begin_abstract
-Blablabla
+In this document we focus on opinion polls in the context of electoral campaigns and the information we can extract from them.
 #+end_abstract
 
-Every pre-election poll tries to answer the question: /If the election were to happen now, who would people be voting for?/
+Every pre-election poll tries to answer the question:
 
-While the media and people want an answer to the question: /Who will people be voting for on election day?/
+#+begin_quote
+If the election were to happen now, who would people be voting for?
+#+end_quote
 
-These are two very different questions as we will see in the following document. In fact, pollsters cannot even answert the first question with great accuracy! The following book is an exploration of how electoral polling works, the questions it tries to answers, and how statistical modeling can help us improve the answers, and even answer questions pollsters are not equipped to answer! We will unroll the whole machinery and go from a single poll at the beginning of the political campaign to the results on election day.
+While the media and people want an answer to the question:
+
+#+begin_quote
+Who will people be voting for on election day?
+#+end_quote
+
+These are two very different questions as we will see in the following document. In fact, pollsters cannot even answer the first question with great accuracy! The following book is an exploration of how electoral polling works, the questions it tries to answers, and how statistical modeling can help us improve the answers, and even answer questions pollsters are not equipped to answer! We will unroll the whole machinery and go from a single poll at the beginning of the political campaign to the results on election day.
 
 This book was born while working on a forecasting model for the French presidential elections. We noticed that even a technical audience had difficulties grasping the limitations of polls and the necessity of statistical modeling. With this book we wish to empower this technical audience with the cocepts and the tools necessary to make better use of the polls than what is currently done in the mainstream media. With the hope that they will themselves develop tools and write books that reach a wider audience and improve the public debate around polls.
 
@@ -28,7 +36,7 @@ You will commonly hear the criticism that all polls are bad and that you should 
 
 In more technical terms, we note $\boldsymbol{v}_t$ the vector that contains the number of people that would vote for either of the $c$ candidates at time $t$. The *true* value of $\boldsymbol{v}_t$ is unknow and could only be obtained if we held elections. People (including the media) usually comment on polls results as if $\boldsymbol{v}_t$ were the quantity reported by polling institutes. Worse, they sometimes comment as if the polls reported $\boldsymbol{v}_{\tau}$ where $\tau$ is election day. This is not the case.
 
-In this book we will show how the voting intentions $\boldsymbol{v}_t$ relate to the answers $\boldsymbol{n}_t^h$ reported by polling institutes $h \in \left[1, \mathcal{H}]$. In other words, we will try to /infer/ the value of $\boldsymbol{v}_t$ from the results $\boldsymbol{n}_t^h$. First we will see what information we can extract from answers to a single poll, and then move on to polling information from several poll to better account for the uncertainty in $\boldsymbol{v}_t$. We will then show how, using additional information, we can try to /predict/ the value $\boldsymbol{v}_\tau$ where $\tau$ is the date of the election.
+In this book we will show how the voting intentions $\boldsymbol{v}_t$ relate to the answers $\boldsymbol{n}_t^h$ reported by polling institutes $h \in \left[1, \mathcal{H}\right]$. In other words, we will try to /infer/ the value of $\boldsymbol{v}_t$ from the results $\boldsymbol{n}_t^h$. First we will see what information we can extract from answers to a single poll, and then move on to polling information from several poll to better account for the uncertainty in $\boldsymbol{v}_t$. We will then show how, using additional information, we can try to /predict/ the value $\boldsymbol{v}_\tau$ where $\tau$ is the date of the election.
 
 * What can a single poll say?
 :PROPERTIES:
@@ -43,6 +51,8 @@ In the following we are concerned only with the result of a single poll. We will
 - Voting intentions (adjusted and sometimes not adjusted)
 - Vote certainty
 
+And will show in the following what information we can extract from each of them.
+
 ** Voting intentions
 :PROPERTIES:
 :CUSTOM_ID: subsec:voting-intentions
@@ -52,7 +62,7 @@ Pollsters ask a series of questions to people who are registered to vote. Among 
 
 #+begin_src latex
 \begin{equation}
-    \mathbf{n} = \left(n^1,\dots,n^c, n^{nr}\right),\: \sum_c n^c = N
+    \mathbf{y} = \left(y^1,\dots,y^c, y^{nr}\right),\qquad \sum_i y^i = N
 \end{equation}
 #+end_src
 
@@ -61,14 +71,13 @@ Pollsters ask a series of questions to people who are registered to vote. Among 
     \mathbf{n} = \left(n^1,\dots,n^c, n^{nr}\right),\: \sum_i n^i = N
 \end{equation}
 
+a vector that contains the number of people who designated each candidate. $y^{nr}$ is the number of people who chose to not respond.
 
-a vector that contains the number of people who designated each candidate. $n^{nr}$ is the number of people who chose to not respond.
-
-Very often the $n^i$ are not given in the pollster's released reports, and we are given instead $\tilde{r}^{\,i}$, the rounded portion of respondants who would vote for $i$. The rounding process is such that
+The number of respondants $y^i$ who answer candidate $i$ are usually not given in the pollster's released reports. We often get instead $\tilde{r}^{\,i}$, the rounded portion of respondants who would vote for $i$. The rounding process is such that the real portion $r^i$ :
 
 #+begin_src latex
 \begin{equation}
-  r^c \in [\tilde{r}^{\,c} -\delta, \tilde{r}^{\,c} + \delta]
+  r^i \in [\tilde{r}^{\,i} -\delta, \tilde{r}^{\,i} + \delta]
 \end{equation}
 #+end_src
 
@@ -81,7 +90,7 @@ where
 
 #+begin_src latex
 \begin{equation}
-  r^c = \frac{n^c}{N-n_{nr}}
+  r^i = \frac{n^i}{N-n_{nr}}
 \end{equation}
 #+end_src
 
@@ -162,7 +171,7 @@ assert sum(results.values()) == 1.
 
 We fit the simplified model using a vague prior on the true intentions:
 
-#+begin_src python :session :async true
+#+begin_src python :session :async true :exports code
 import numpy as np
 import pymc3 as pm
 
@@ -171,11 +180,9 @@ prior_intentions = np.array(
 )
 
 with pm.Model() as intentions:
-    p = pm.Dirichlet("intentions", prior_intentions)  # Prior too vague?
+    p = pm.Dirichlet("intentions", prior_intentions)
     r = pm.Dirichlet("real_ratios", sample_size * p, observed=list(results.values()))
 #+end_src
-
-#+RESULTS:
 
 We sample from the posterior distribution without any incident as attested by the trace:
 
@@ -435,6 +442,12 @@ for i, c in enumerate(intentions.keys()):
 
 #+RESULTS:
 
+***** TODO Fit Dirichlet-Dirichlet model on the ELABE data
+***** TODO Plot the itentions with 95% uncertainty
+***** TODO Intepretation of $\alpha# in terms of sample size
+***** TODO Try with different priors to show the influence of the prior value
+***** TODO Set the prior to the previous result
+
 ** Participation
 :PROPERTIES:
 :CUSTOM_ID: subsec:participation
@@ -500,11 +513,7 @@ De sorte que s'il y a $C$ sous-catégories d'indécis, la probabilité $p_c^i$ d
 
 Nous pouvons ensuite utiliser le modèle pour estimer les paramètres $p_a$, $p_v$, $\alpha$, $\beta$ qui vont nous permettre ensuite d'estimer le taux de participation moyen et autres quantités d'intérêt.
 
-*** Données
-
-Bien évidemment, les questions posées par les instituts de sondages ne sont pas du tout normalisées; nous avons commencé à [[https://github.com/pollsposition/data/issues/11][recenser les questions posées]]. Néanmoins, même si les détails des questions sont différents (et donc bien souvent le nombre de catégories), il sera possible d'utiliser un *modèle hiérarchique* en attribuant un prior commun aux paramètres $\alpha$, $\beta$, $p_a$, $p_v$.
-
-** When people are uncertain
+** Choice uncertainty
 :PROPERTIES:
 :CUSTOM_ID: subsec:uncertain-choice
 :END:
@@ -962,51 +971,6 @@ def divide_bandwagon(intentions_certain, intentions_uncertain):
 *** TODO Check the calculations and plot `undecided^2` :noexport:
 
 
-* Polls and biases
-
-Election polls also suffer from non-sampling errors. This error can manifest in a biased estimator, as well as a higher variance than would be expect from pure sampling errors.
-
-In an ideal world pollsters could sample among people registered to vote uniformly at random, but this is of course not the case. In case of a phone interview, this would imply that everyone has a phone, is able to pick up the phone at all times, and is willing/has time to answer the survey. This is of course unrealistic; every poll suffers from sampling bias.
-
-** Sampling bias
-
-Two different pollsters $\rho$ and $\rho'$ will build their samples differently, there is thus a /pollster-specific sampling bias/. Some pollsters use different methods to build their sample depending on the poll. We can assume there also is a /method-specific bias/, conditioned on the sample. We will model the pollster-method bias with a random variable $\tilde{\alpha}_{\rho,m}$, and will specify its distribution later.
-
-$\tilde{\alpha}_{\rho,m}$ is a crude proxy for a complex situation, but the only one we can craft in the absence of more information about the composition of the samples.
-
-** Sample adjustment
-
-Pollsters however have more information about the composition of the sample as they usually ask information about the person's gender, age, job and their vote during previous elections. They then use /poststratification/ methods to adjust the results they obtained with this sample to what would be measure with a perfect sample.
-
-In the absence of this information, we assume that adjustment and sampling procedures remain the same for each pollster, and include both biases in the same random variable $\alpha_{\rho,m}$.
-
-*** Poststratification
-*** MRP
-[[cite:&gelman1997]]
-
-** Who will really vote?
-
-Talk about the false controversy about methods that try to only keep people who are likely to vote. There's no point taking into account the opinion who are *absolutely certain*, on the other hand some could change their mind so we cannot exclude everyone.
-
-
-We describe the poll aggregation model that will be used in Pollsposition.
-
-* State of the art :noexport:
-
-On 538:
-- Polls are weighted based on /sample size/ and /pollster rating/;
-- Make sure not one polling firm dominates the average;
-- There are two ways to compute averages:
-  1. Weighted average;
-  2. Other method that computes a trend line (more aggressive)
-- Polls are subject to 3 types of adjustment:
-  1. *Likely voters* adjustments, which accounts for the fact that polls from
-     likely and registered voters differ in predictable ways.
-  2. *House effect* adjustment which detects polls that consistently leans
-     towards a party and consistently have fewer undecided voters.
-  3. *Timeline adjustment* which is based on polls' recency
-
-
 * Time evolution
 :PROPERTIES:
 :CUSTOM_ID: sec:time-evolution
@@ -1095,6 +1059,62 @@ Where $\boldsymbol{\theta}$ is the /mean support/ for each party, $\Sigma$ is th
 ***** TODO How would you interpret the non diagonal elements of $\Sigma$? Can that be seen as support transfers?
 ***** TODO Try the other mean-reverting kernel, the Ornstein-Uhlenbeck kernel
 ***** TODO I don't see why the process should be stationary, try the Wiener kernel?
+
+* Polls and biases
+
+Election polls also suffer from non-sampling errors. This error can manifest in a biased estimator, as well as a higher variance than would be expect from pure sampling errors.
+
+In an ideal world pollsters could sample among people registered to vote uniformly at random, but this is of course not the case. In case of a phone interview, this would imply that everyone has a phone, is able to pick up the phone at all times, and is willing/has time to answer the survey. This is of course unrealistic; every poll suffers from sampling bias.
+
+** Sampling bias
+
+Two different pollsters $\rho$ and $\rho'$ will build their samples differently, there is thus a /pollster-specific sampling bias/. Some pollsters use different methods to build their sample depending on the poll. We can assume there also is a /method-specific bias/, conditioned on the sample. We will model the pollster-method bias with a random variable $\tilde{\alpha}_{\rho,m}$, and will specify its distribution later.
+
+$\tilde{\alpha}_{\rho,m}$ is a crude proxy for a complex situation, but the only one we can craft in the absence of more information about the composition of the samples.
+
+*** Non-response bias
+
+
+See [[cite:&gelman2016]] where the authors show that the opinion swings visible in election polls are probably due to /non-reponse bias/. People who perceive that their candidate is not doing well are less likely to report voting for them and answer surveys.
+
+In our models we do not account for non-response bias, and I currently don't see how we could account for it without access to a fixed panel of individuals.
+
+** Sample adjustment
+
+Pollsters however have more information about the composition of the sample as they usually ask information about the person's gender, age, job and their vote during previous elections. They then use /poststratification/ methods to adjust the results they obtained with this sample to what would be measure with a perfect sample.
+
+In the absence of this information, we assume that adjustment and sampling procedures remain the same for each pollster, and include both biases in the same random variable $\alpha_{\rho,m}$.
+
+*** Post-stratification
+[[cite:&little1993]]
+[[cite:&gelman2000]] compares different weighing methods with model-based (MRP) methods.
+
+*** Multilevel Regresion and Post-stratification (MRP)
+[[cite:&gelman1997]]
+
+** Who will really vote?
+
+Talk about the false controversy about methods that try to only keep people who are likely to vote. There's no point taking into account the opinion who are *absolutely certain*, on the other hand some could change their mind so we cannot exclude everyone.
+
+
+We describe the poll aggregation model that will be used in Pollsposition.
+
+
+* State of the art :noexport:
+
+On 538:
+- Polls are weighted based on /sample size/ and /pollster rating/;
+- Make sure not one polling firm dominates the average;
+- There are two ways to compute averages:
+  1. Weighted average;
+  2. Other method that computes a trend line (more aggressive)
+- Polls are subject to 3 types of adjustment:
+  1. *Likely voters* adjustments, which accounts for the fact that polls from
+     likely and registered voters differ in predictable ways.
+  2. *House effect* adjustment which detects polls that consistently leans
+     towards a party and consistently have fewer undecided voters.
+  3. *Timeline adjustment* which is based on polls' recency
+
 
 * Poll aggregation
 :PROPERTIES:
@@ -1349,6 +1369,10 @@ Each pollster also has its idiosyncratic bias regarding the different families:
 \end{equation}
 
 ***** TODO Why the =ZeroSumNormal= here too?
+#+begin_quote
+Making sure that our different effects sum to zero. Think about the month effect. It only makes sense in a relative sense: some months are better than average, some others are worse, but you can't have only good months -- they'd be good compared to what? So we want to make sure that the average month effect is 0, while allowing each month to be better or worse than average if needed. And the reasoning is the same for house effects for instance -- can you see why?
+#+end_quote
+
 
 ** HOLD The unemployment value at $t_0$ is not known so what value do we get? The latest available? :noexport:
 
@@ -1361,5 +1385,7 @@ Each pollster also has its idiosyncratic bias regarding the different families:
 :CUSTOM_ID: sec:discussion
 :END:
 
-#+BIBLIOGRAPHYSTYLE: plainnat
-#+BIBLIOGRAPHY: bibliography.bib
+#+begin_src latex
+\bibliographystyle{plain}
+\bibliography{bibliography}
+#+end_src
