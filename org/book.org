@@ -16,23 +16,37 @@
 Blablabla
 #+end_abstract
 
-Every pre-election poll tries to answer the question:
+Every pre-election poll tries to answer the question: /If the election were to happen now, who would people be voting for?/
 
-/If the election were to happen now, who would people be voting for?/
+While the media and people want an answer to the question: /Who will people be voting for on election day?/
 
-While the media and people want an answer to the question:
+These are two very different questions as we will see in the following document. In fact, pollsters cannot even answert the first question with great accuracy! The following book is an exploration of how electoral polling works, the questions it tries to answers, and how statistical modeling can help us improve the answers, and even answer questions pollsters are not equipped to answer! We will unroll the whole machinery and go from a single poll at the beginning of the political campaign to the results on election day.
 
-/Who will people be voting for on election day?/
+This book was born while working on a forecasting model for the French presidential elections. We noticed that even a technical audience had difficulties grasping the limitations of polls and the necessity of statistical modeling. With this book we wish to empower this technical audience with the cocepts and the tools necessary to make better use of the polls than what is currently done in the mainstream media. With the hope that they will themselves develop tools and write books that reach a wider audience and improve the public debate around polls.
 
-We note $\boldsymbol{v}_t$ the vector that contains the number of people that would vote for either of the $c$ candidates at time $t$. The *true* value of $\boldsymbol{v}_t$ is unknow and could only be obtained if we held elections. People (including the media) usually comment on polls results as if $\boldsymbol{v}_t$ were the quantity reported by polling institutes. Worse, they sometimes comment as if the polls reported $\boldsymbol{v}_{\tau}$ where $\tau$ is election day. This is not the case.
+You will commonly hear the criticism that all polls are bad and that you should thus never trust polls. While it is true that polls are doomed to be wrong all the time, we will show that as long as they make uncorrelated mistakes we can still learn something thanks to the multitude of pollsters. In return, we will argue that our forecast is probably wrong, but one could get closer to the true uncertainty by pooling the results from different models.
 
-In this book we will show how the voting intentions $\boldsymbol{v}_t$ relate to the answers $\boldsymbol{n}_t^h$ reported by polling institutes $h \in \left[1, \mathcal{H}]$. In other words, we will try to /infer/ the value of $\boldsymbol{v}_t$ from the results $\boldsymbol{n}_t^h$. First we will see what information we can extract from answers to a single poll, and then move on to polling information from several poll to better account for the uncertainty in $\boldsymbol{v}_t$. We will then show how, using additional information, we can try to /predict/
+In more technical terms, we note $\boldsymbol{v}_t$ the vector that contains the number of people that would vote for either of the $c$ candidates at time $t$. The *true* value of $\boldsymbol{v}_t$ is unknow and could only be obtained if we held elections. People (including the media) usually comment on polls results as if $\boldsymbol{v}_t$ were the quantity reported by polling institutes. Worse, they sometimes comment as if the polls reported $\boldsymbol{v}_{\tau}$ where $\tau$ is election day. This is not the case.
+
+In this book we will show how the voting intentions $\boldsymbol{v}_t$ relate to the answers $\boldsymbol{n}_t^h$ reported by polling institutes $h \in \left[1, \mathcal{H}]$. In other words, we will try to /infer/ the value of $\boldsymbol{v}_t$ from the results $\boldsymbol{n}_t^h$. First we will see what information we can extract from answers to a single poll, and then move on to polling information from several poll to better account for the uncertainty in $\boldsymbol{v}_t$. We will then show how, using additional information, we can try to /predict/ the value $\boldsymbol{v}_\tau$ where $\tau$ is the date of the election.
 
 * What can a single poll say?
+:PROPERTIES:
+:CUSTOM_ID: sec:single-poll
+:END:
 
-In the following we are concerned only with the result of a single poll. We will thus drop the time index $t$ and the pollster index $h$.
+In the following we are concerned only with the result of a single poll. We will thus drop the time index $t$ and the pollster index $h$. We consider the published results from a single poll which typically consists in:
+
+- The number of polled people whoe are registered to vote
+- An estimate of how many of these intend to vote
+- The number of people who expressed an intention
+- Voting intentions (adjusted and sometimes not adjusted)
+- Vote certainty
 
 ** Voting intentions
+:PROPERTIES:
+:CUSTOM_ID: subsec:voting-intentions
+:END:
 
 Pollsters ask a series of questions to people who are registered to vote. Among which, they ask people who they would vote for should the elections happen the following weekend. As a result they generally report :
 
@@ -421,8 +435,10 @@ for i, c in enumerate(intentions.keys()):
 
 #+RESULTS:
 
-
 ** Participation
+:PROPERTIES:
+:CUSTOM_ID: subsec:participation
+:END:
 
 Not everyone who answers polls plans on going to vote, and we would like to estimate the participation level at the election. Among $N$ people interrogated and registered to vote, we write $N_v$ the number of people certain to vote $N_n$ the number of people certain to not vote and $N_i$ the number of undecided people so that
 
@@ -452,6 +468,10 @@ Les $n_i$ personnes se divisent en d'autres sous-catégories $c=1, \dots,C$. En 
 
 Chaque sous-catégorie d'indécis regroupe des personnes dont les probabilités d'aller son similaires, et croissantes. Certains instituts demandent aux interrogés d'estimer leur probabilité d'aller voter (Elabe, Ipsos, Opinionway), d'autres leur demande de la qualifier (Ifop, Harris).
 
+#+CAPTION: How to go from the pollsters' "Probability to abstain" to a real probability distirbution.
+#+ATTR_LATEX: :width 0.66\textwidth
+[[file:~/projects/presidentielles/figures/abstention-diagram.svg]]
+
 On note $\theta_i$ la probabilité d'aller voter d'un indécis. On suppose que la distribution de $\theta_i$ suit un loi Beta
 
 #+begin_src latex
@@ -480,13 +500,14 @@ De sorte que s'il y a $C$ sous-catégories d'indécis, la probabilité $p_c^i$ d
 
 Nous pouvons ensuite utiliser le modèle pour estimer les paramètres $p_a$, $p_v$, $\alpha$, $\beta$ qui vont nous permettre ensuite d'estimer le taux de participation moyen et autres quantités d'intérêt.
 
-* Données
+*** Données
 
 Bien évidemment, les questions posées par les instituts de sondages ne sont pas du tout normalisées; nous avons commencé à [[https://github.com/pollsposition/data/issues/11][recenser les questions posées]]. Néanmoins, même si les détails des questions sont différents (et donc bien souvent le nombre de catégories), il sera possible d'utiliser un *modèle hiérarchique* en attribuant un prior commun aux paramètres $\alpha$, $\beta$, $p_a$, $p_v$.
 
-
-
 ** When people are uncertain
+:PROPERTIES:
+:CUSTOM_ID: subsec:uncertain-choice
+:END:
 
 The previous curves thus makes the underlying assumption that every unsure people will stick to their answer. But some people will change their mind. They are even more likely to do so the further we are from the election.
 
@@ -940,6 +961,7 @@ def divide_bandwagon(intentions_certain, intentions_uncertain):
 
 *** TODO Check the calculations and plot `undecided^2` :noexport:
 
+
 * Polls and biases
 
 Election polls also suffer from non-sampling errors. This error can manifest in a biased estimator, as well as a higher variance than would be expect from pure sampling errors.
@@ -957,6 +979,10 @@ $\tilde{\alpha}_{\rho,m}$ is a crude proxy for a complex situation, but the only
 Pollsters however have more information about the composition of the sample as they usually ask information about the person's gender, age, job and their vote during previous elections. They then use /poststratification/ methods to adjust the results they obtained with this sample to what would be measure with a perfect sample.
 
 In the absence of this information, we assume that adjustment and sampling procedures remain the same for each pollster, and include both biases in the same random variable $\alpha_{\rho,m}$.
+
+*** Poststratification
+*** MRP
+[[cite:&gelman1997]]
 
 ** Who will really vote?
 
@@ -1329,3 +1355,11 @@ Each pollster also has its idiosyncratic bias regarding the different families:
 ** IDEA Why not use a Dirichlet-Dirichlet distribution instead of Dirichlet-Multinomial distribution since we get the results as % :noexport:
 ** IDEA How do we handle uncertain choices here? :noexport:
 ** IDEA Learn the GP lengthscale :noexport:
+
+* Discussion
+:PROPERTIES:
+:CUSTOM_ID: sec:discussion
+:END:
+
+#+BIBLIOGRAPHYSTYLE: plainnat
+#+BIBLIOGRAPHY: bibliography.bib

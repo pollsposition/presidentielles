@@ -51,3 +51,5 @@
 
 #+LaTeX_HEADER_EXTRA: \usepackage{enumitem}
 #+LaTeX_HEADER_EXTRA: \setlist{noitemsep}
+
+#+LaTeX_HEADER_EXTRA: \usepackage{svg}
