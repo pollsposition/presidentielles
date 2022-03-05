@@ -8,3 +8,4 @@ __pycache__
 *.gif
 *.pdf
 *.tex
+/org/_minted-book/
