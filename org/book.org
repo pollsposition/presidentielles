@@ -2,14 +2,14 @@
 #+SUBTITLE: Bayesian statistics and French politics
 #+AUTHOR: Rémi Louf, Alexandre Andorra
 #+DATE: 2022-03-04
-#+EMAIL: remilouf@gmail.com
+#+EMAIL: bonjour@pollsposition.com
 
 #+STARTUP: hideblocks overview
 #+OPTIONS: \n:t H:4 toc:2
 
 #+SETUPFILE: latex-setup.org
 
-#+PROPERTY: header-args:latex   :results raw :exports results
+#+PROPERTY: header-args:latex :results raw :exports results
 #+PROPERTY: header-args:python :eval no-export :noweb strip-export :exports none
 
 #+begin_abstract
