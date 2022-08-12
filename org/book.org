@@ -1376,9 +1376,10 @@ Making sure that our different effects sum to zero. Think about the month effect
 
 ** HOLD The unemployment value at $t_0$ is not known so what value do we get? The latest available? :noexport:
 
-** IDEA Why not use a Dirichlet-Dirichlet distribution instead of Dirichlet-Multinomial distribution since we get the results as % :noexport:
-** IDEA How do we handle uncertain choices here? :noexport:
-** IDEA Learn the GP lengthscale :noexport:
+** TODO Why not use a Dirichlet-Dirichlet distribution instead of Dirichlet-Multinomial distribution since we get the results as % :noexport:
+** TODO How do we handle uncertain choices here? :noexport:
+** TODO Learn the GP lengthscale :noexport:
+
 
 * Discussion
 :PROPERTIES:
