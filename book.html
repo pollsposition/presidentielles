@@ -1,0 +1,1187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-08-12 Fri 17:20 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pollsposition</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Rémi Louf, Alexandre Andorra" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="style.css" /><script data-goatcounter="https://thetypicalset.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Pollsposition
+<br />
+<span class="subtitle">Bayesian statistics and French politics</span>
+</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec:single-poll">What can a single poll say?</a>
+<ul>
+<li><a href="#subsec:voting-intentions">Voting intentions</a></li>
+<li><a href="#subsec:participation">Participation</a></li>
+<li><a href="#subsec:uncertain-choice">Choice uncertainty</a></li>
+</ul>
+</li>
+<li><a href="#sec:time-evolution">Time evolution</a>
+<ul>
+<li><a href="#org47f29dd">Random walk</a></li>
+<li><a href="#orgea59e8e">Gaussian Processes</a></li>
+</ul>
+</li>
+<li><a href="#org693a839">Polls and biases</a>
+<ul>
+<li><a href="#orgc9ec5d5">Sampling bias</a></li>
+<li><a href="#org810d8d2">Sample adjustment</a></li>
+<li><a href="#org908ad44">Who will really vote?</a></li>
+</ul>
+</li>
+<li><a href="#sec:aggregation">Poll aggregation</a>
+<ul>
+<li><a href="#orga4ccc35">Time-varying latent support</a></li>
+<li><a href="#org1b182c4">House effects</a></li>
+</ul>
+</li>
+<li><a href="#sec:predict">Predict the result of the election</a>
+<ul>
+<li><a href="#org0136be6">Poll aggregator</a></li>
+<li><a href="#orgd5fd39b">Fundamentals model</a></li>
+<li><a href="#org0fe0a43">Candidate support</a></li>
+<li><a href="#org8063272">House effects</a></li>
+</ul>
+</li>
+<li><a href="#sec:discussion">Discussion</a></li>
+</ul>
+</div>
+</div>
+<div class="abstract">
+<p>
+In this document we focus on opinion polls in the context of electoral campaigns and the information we can extract from them.<br />
+</p>
+
+</div>
+
+<p>
+Every pre-election poll tries to answer the question:<br />
+</p>
+
+<blockquote>
+<p>
+If the election were to happen now, who would people be voting for?<br />
+</p>
+</blockquote>
+
+<p>
+While the media and people want an answer to the question:<br />
+</p>
+
+<blockquote>
+<p>
+Who will people be voting for on election day?<br />
+</p>
+</blockquote>
+
+<p>
+These are two very different questions as we will see in the following document. In fact, pollsters cannot even answer the first question with great accuracy! The following book is an exploration of how electoral polling works, the questions it tries to answers, and how statistical modeling can help us improve the answers, and even answer questions pollsters are not equipped to answer! We will unroll the whole machinery and go from a single poll at the beginning of the political campaign to the results on election day.<br />
+</p>
+
+<p>
+This book was born while working on a forecasting model for the French presidential elections. We noticed that even a technical audience had difficulties grasping the limitations of polls and the necessity of statistical modeling. With this book we wish to empower this technical audience with the cocepts and the tools necessary to make better use of the polls than what is currently done in the mainstream media. With the hope that they will themselves develop tools and write books that reach a wider audience and improve the public debate around polls.<br />
+</p>
+
+<p>
+You will commonly hear the criticism that all polls are bad and that you should thus never trust polls. While it is true that polls are doomed to be wrong all the time, we will show that as long as they make uncorrelated mistakes we can still learn something thanks to the multitude of pollsters. In return, we will argue that our forecast is probably wrong, but one could get closer to the true uncertainty by pooling the results from different models.<br />
+</p>
+
+<p>
+In more technical terms, we note \(\boldsymbol{v}_t\) the vector that contains the number of people that would vote for either of the \(c\) candidates at time \(t\). The <b>true</b> value of \(\boldsymbol{v}_t\) is unknow and could only be obtained if we held elections. People (including the media) usually comment on polls results as if \(\boldsymbol{v}_t\) were the quantity reported by polling institutes. Worse, they sometimes comment as if the polls reported \(\boldsymbol{v}_{\tau}\) where \(\tau\) is election day. This is not the case.<br />
+</p>
+
+<p>
+In this book we will show how the voting intentions \(\boldsymbol{v}_t\) relate to the answers \(\boldsymbol{n}_t^h\) reported by polling institutes \(h \in \left[1, \mathcal{H}\right]\). In other words, we will try to <i>infer</i> the value of \(\boldsymbol{v}_t\) from the results \(\boldsymbol{n}_t^h\). First we will see what information we can extract from answers to a single poll, and then move on to polling information from several poll to better account for the uncertainty in \(\boldsymbol{v}_t\). We will then show how, using additional information, we can try to <i>predict</i> the value \(\boldsymbol{v}_\tau\) where \(\tau\) is the date of the election.<br />
+</p>
+
+<div id="outline-container-org9b8b574" class="outline-2">
+<h2 id="sec:single-poll"><a id="org9b8b574"></a>What can a single poll say?</h2>
+<div class="outline-text-2" id="text-sec:single-poll">
+<p>
+In the following we are concerned only with the result of a single poll. We will thus drop the time index \(t\) and the pollster index \(h\). We consider the published results from a single poll which typically consists in:<br />
+</p>
+
+<ul class="org-ul">
+<li>The number of polled people whoe are registered to vote<br /></li>
+<li>An estimate of how many of these intend to vote<br /></li>
+<li>The number of people who expressed an intention<br /></li>
+<li>Voting intentions (adjusted and sometimes not adjusted)<br /></li>
+<li>Vote certainty<br /></li>
+</ul>
+
+<p>
+And will show in the following what information we can extract from each of them.<br />
+</p>
+</div>
+
+<div id="outline-container-orgdbb9f02" class="outline-3">
+<h3 id="subsec:voting-intentions"><a id="orgdbb9f02"></a>Voting intentions</h3>
+<div class="outline-text-3" id="text-subsec:voting-intentions">
+<p>
+Pollsters ask a series of questions to people who are registered to vote. Among which, they ask people who they would vote for should the elections happen the following weekend. As a result they generally report :<br />
+</p>
+
+\begin{equation}
+    \mathbf{n} = \left(n^1,\dots,n^c, n^{nr}\right),\: \sum_i n^i = N
+\end{equation}
+
+<p>
+a vector that contains the number of people who designated each candidate. \(y^{nr}\) is the number of people who chose to not respond.<br />
+</p>
+
+<p>
+The number of respondants \(y^i\) who answer candidate \(i\) are usually not given in the pollster's released reports. We often get instead \(\tilde{r}^{\,i}\), the rounded portion of respondants who would vote for \(i\). The rounding process is such that the real portion \(r^i\) :<br />
+</p>
+
+\begin{equation}
+  r_i \in [\tilde{r}_i -\delta, \tilde{r}_i + \delta]
+\end{equation}
+
+<p>
+where<br />
+</p>
+
+\begin{equation}
+  r_i = \frac{n_i}{N-n_{nr}}
+\end{equation}
+
+<p>
+We can directly model the vector of ratios \(\mathbf{r}\) with a reparametrized Dirichlet distribution:<br />
+</p>
+
+\begin{equation}
+  \boldsymbol{r} \sim \operatorname{Dirichlet}(\boldsymbol{p}, N)
+\end{equation}
+
+<p>
+where \(\sum_i p_i = 1\) and each \(p_i\) represents the "true" probability to vote for candidate \(i\). A natural prior for the \(p_i\) is the Dirichlet distribution:<br />
+</p>
+
+\begin{equation}
+  \boldsymbol{p} \sim \operatorname{Dirichlet}(\boldsymbol{\alpha})
+\end{equation}
+
+<p>
+Let us consider a <a href="https://elabe.fr/wp-content/uploads/2021/12/presidentielle-2022.pdf">somewhat controversial poll from Elabe</a> where Pécresse was given 20% of the vote intentions while she was around 10% a few weeks back. I reproduce the data below :<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption class="t-above"><span class="table-number">Table 1:</span> This ELABE poll released on December, 7th 2021 sparked controversy as Valérie Pécresse seemed to be closing in on Emmanuel Macron. Base: 965 people who are sure to vote and expressed an opinion. The original results can be found on <a href="https://elabe.fr/wp-content/uploads/2021/12/presidentielle-2022.pdf">ELABE's website</a>.</caption>
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Candidate</th>
+<th scope="col" class="org-right">Voting intentions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Arthaud</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">Dupont-Aignan</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">Hidalgo</td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">Jadot</td>
+<td class="org-right">7</td>
+</tr>
+
+<tr>
+<td class="org-left">Lassalle</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">Le Pen</td>
+<td class="org-right">15</td>
+</tr>
+
+<tr>
+<td class="org-left">Macron</td>
+<td class="org-right">23</td>
+</tr>
+
+<tr>
+<td class="org-left">Mélenchon</td>
+<td class="org-right">8</td>
+</tr>
+
+<tr>
+<td class="org-left">Montebourg</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">Pécresse</td>
+<td class="org-right">20</td>
+</tr>
+
+<tr>
+<td class="org-left">Poutou</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">Roussel</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">Zemmour</td>
+<td class="org-right">14</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+We fit the simplified model using a vague prior on the true intentions:<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> numpy <span style="font-weight: bold;">as</span> np
+<span style="font-weight: bold;">import</span> pymc3 <span style="font-weight: bold;">as</span> pm
+
+<span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+    [0.02, 0.02, 0.02, 0.10, 0.05, 0.02, 0.10, 0.20, 0.20, 0.02, 0.02, 0.20, 0.15]
+)
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> intentions:
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions)
+    <span style="font-weight: bold; font-style: italic;">r</span> = pm.Dirichlet(<span style="font-style: italic;">"real_ratios"</span>, sample_size * p, observed=<span style="font-weight: bold;">list</span>(results.values()))
+</pre>
+</div>
+
+<p>
+We sample from the posterior distribution without any incident as attested by the trace:<br />
+</p>
+
+<p>
+We can now look at the raw voting intentions inferred from the poll's results:<br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a id="orgf473487"></a><span class="todo TODO">TODO</span> Fit Dirichlet-Dirichlet model on the ELABE data<br /></li>
+<li><a id="org429de09"></a><span class="todo TODO">TODO</span> Plot the itentions with 95% uncertainty<br /></li>
+<li><a id="org26dfc1b"></a><span class="todo TODO">TODO</span> Intepretation of $&alpha;# in terms of sample size<br /></li>
+<li><a id="orgc3ca84c"></a><span class="todo TODO">TODO</span> Try with different priors to show the influence of the prior value<br /></li>
+<li><a id="org5d13e6b"></a><span class="todo TODO">TODO</span> Set the prior to the previous result<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org8f57143" class="outline-3">
+<h3 id="subsec:participation"><a id="org8f57143"></a>Participation</h3>
+<div class="outline-text-3" id="text-subsec:participation">
+<p>
+Not everyone who answers polls plans on going to vote, and we would like to estimate the participation level at the election. Among \(N\) people interrogated and registered to vote, we write \(N_v\) the number of people certain to vote \(N_n\) the number of people certain to not vote and \(N_i\) the number of undecided people so that<br />
+</p>
+
+\begin{equation}
+  N = N_v + N_n + N_i
+\end{equation}
+
+<p>
+Les \(n_i\) personnes se divisent en d'autres sous-catégories \(c=1, \dots,C\). En notant \(\boldsymbol{p} = \left(p^a, p^{i}_1, \dots, p^{i}_C, p^v\right)\) la probabilité d'appartenir à chaque catégorie nous pouvons écrire en toute généralité:<br />
+</p>
+
+\begin{equation}
+  \boldsymbol{n} \sim \operatorname{Multinomial}(\boldsymbol{p}, N)
+\end{equation}
+
+<p>
+Chaque sous-catégorie d'indécis regroupe des personnes dont les probabilités d'aller son similaires, et croissantes. Certains instituts demandent aux interrogés d'estimer leur probabilité d'aller voter (Elabe, Ipsos, Opinionway), d'autres leur demande de la qualifier (Ifop, Harris).<br />
+</p>
+
+
+<div class="figure">
+<p><object type="image/svg+xml" data="file:///home/runner/projects/presidentielles/figures/abstention-diagram.svg" class="org-svg">
+Sorry, your browser does not support SVG.</object><br />
+</p>
+<p><span class="figure-number">Figure 1: </span>How to go from the pollsters' "Probability to abstain" to a real probability distirbution.</p>
+</div>
+
+<p>
+On note \(\theta_i\) la probabilité d'aller voter d'un indécis. On suppose que la distribution de \(\theta_i\) suit un loi Beta<br />
+</p>
+
+\begin{equation}
+ \theta_{i}  \sim \operatorname{Beta}(\alpha, \beta)
+\end{equation}
+
+<p>
+De sorte que s'il y a \(C\) sous-catégories d'indécis, la probabilité \(p_c^i\) d'être indécis et d'appartenir à la sous-catégorie \(c\) est donnée par:<br />
+</p>
+
+\begin{equation}
+ p_{c}^{i} = \int_{(c-1)/C}^{c/C} P(\theta_{i}=x|\alpha, \beta) \mathrm{d}x
+\end{equation}
+
+<p>
+Nous pouvons ensuite utiliser le modèle pour estimer les paramètres \(p_a\), \(p_v\), \(\alpha\), \(\beta\) qui vont nous permettre ensuite d'estimer le taux de participation moyen et autres quantités d'intérêt.<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3c7e260" class="outline-3">
+<h3 id="subsec:uncertain-choice"><a id="org3c7e260"></a>Choice uncertainty</h3>
+<div class="outline-text-3" id="text-subsec:uncertain-choice">
+<p>
+The previous curves thus makes the underlying assumption that every unsure people will stick to their answer. But some people will change their mind. They are even more likely to do so the further we are from the election.<br />
+</p>
+
+<p>
+Luckily some polls (including Elabe) ask people whether they are certain of their choice :<br />
+</p>
+
+<p>
+Let us first look at the distributions when we only consider people who are absolutely sure to vote for that person:<br />
+</p>
+
+<p>
+This substantially changes the results, and Pécresse is not guaranteed to go to the runoff. Here is the probability that X has a better score than Y taking the uncertains into account and without.<br />
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">X</th>
+<th scope="col" class="org-left">Y</th>
+<th scope="col" class="org-right">Uncertains don't vote</th>
+<th scope="col" class="org-right">Uncertains don't change their mind</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Pécresse</td>
+<td class="org-left">Le Pen</td>
+<td class="org-right">99.7%</td>
+<td class="org-right">44.5%</td>
+</tr>
+
+<tr>
+<td class="org-left">Le Pen</td>
+<td class="org-left">Zemmour</td>
+<td class="org-right">71.5%</td>
+<td class="org-right">97.15%</td>
+</tr>
+
+<tr>
+<td class="org-left">Mélenchon</td>
+<td class="org-left">Jadot</td>
+<td class="org-right">71.5%</td>
+<td class="org-right">99.8%</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>
+This is of course a very unrealistic scenario, so let us try to model the presence of uncertain people.<br />
+</p>
+
+<p>
+We note \(\tilde{\zeta}_i\) the reported proportion of the \(n_i\) people who say they are sure to vote for \(i\), which is the rounded version of \(\zeta_i\) the true proportion of people who say they are going to vote for \(i\) and are certain to do so.<br />
+</p>
+
+<p>
+The number \(v_i\) of people who would actually vote for \(i\) this weekend is given by<br />
+</p>
+
+\begin{equation}
+  v_{i} = n_{i} \zeta_{i} + \Omega_{i}
+\end{equation}
+
+<p>
+where<br />
+</p>
+
+\begin{equation}
+ \Omega_{i}  = \sum_{j} \bar{\zeta}_{j,i}
+\end{equation}
+
+<p>
+Where<br />
+</p>
+
+\begin{equation}
+\bar{\zeta}_{j,i} = n_j (1-\zeta_j)\: \epsilon_{j,i}
+\end{equation}
+
+<p>
+is the number of people who originally said they intended to vote for \(j\) but will actually vote for \(i\).<br />
+</p>
+
+<p>
+Although it is needed for posterior predictive sampling, the distributions of \(\epsilon_{j,i}\) is unknown. In the absence of more information we have no choice but to explore several assumptions.<br />
+</p>
+</div>
+
+<div id="outline-container-org6fbad97" class="outline-4">
+<h4 id="org6fbad97">Won't change their mind</h4>
+<div class="outline-text-4" id="text-org6fbad97">
+<p>
+Everyone who told the pollster they have the intention to vote for \(i\) will actually vote for \(i\).<br />
+</p>
+
+\begin{equation}
+  \epsilon_{i,j} = \delta_{i,j}
+\end{equation}
+
+<p>
+where \(\delta\) is the Kronecker symbol, \(\delta_{i,i} = 1\) and \(\delta_{i,j} = 0\) if \(i \neq j\). This hypothesis gives us a <i>lower bound</i> on the total uncertainty. This corresponds to the first figure with raw vote intentions we showed earlier.<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org935de20" class="outline-4">
+<h4 id="org935de20">Completely undecided</h4>
+<div class="outline-text-4" id="text-org935de20">
+<p>
+A perhaps extreme example. We pretend to not know anything at all about the undecided and assume they will chose uniformly at random among the remanining candidates:<br />
+</p>
+
+\begin{equation}
+  \epsilon_{i} = \operatorname{Dirichlet}(\boldsymbol{\beta})
+\end{equation}
+
+<p>
+where \(\boldsymbol{\beta} \propto \mathrm{1}\). This gives us an <i>upper bound</i> (given the information we have) on the total uncertainty.<br />
+</p>
+
+<p>
+In the following figure we go one step further. We divide people who are certain to vote but did not give any name uniformly among the candidates. We observed an increased uncertainty and results that are less clear cut:<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org223f029" class="outline-4">
+<h4 id="org223f029">Constant fraction of undecided</h4>
+<div class="outline-text-4" id="text-org223f029">
+<p>
+An intermediate assumption is that there is a constant fraction of undecided who will vote for the candidate, and the rest will vote for someone else uniformly at random.<br />
+</p>
+
+<p>
+Let us show now the evolution of the voting intentions for different pairs of candidates depending on the fraction of uncertaint people who will vote for whoever they said they would:<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7d786e7" class="outline-4">
+<h4 id="org7d786e7">\(\text{Undecided}^2\)</h4>
+<div class="outline-text-4" id="text-org7d786e7">
+<p>
+We assume that \(\boldsymbol{\beta} \propto \boldsymbol{\zeta}\). The more people tend to be certain to vote for candidate \(i\), the more likely uncertain people are likely to vote for them in the end.<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2141b00" class="outline-4">
+<h4 id="org2141b00">Bandwagon effect</h4>
+<div class="outline-text-4" id="text-org2141b00">
+<p>
+We now assume that undecided people are more likely to follow the candidate with the highest score (bandwagon effect, helped by polls)<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org62fb18f" class="outline-2">
+<h2 id="sec:time-evolution"><a id="org62fb18f"></a>Time evolution</h2>
+<div class="outline-text-2" id="text-sec:time-evolution">
+<p>
+Pollsters will poll their population samples several times over the course of the political campaign. We can estimate the latent intentions independently for every time step, and this is probably correct when the polling frequency is low. As the elections approaches, most pollsters will provide results almost on a daily basis. It is however very unlikely that voting intentions will exhibit large swings as many people are almost certain of who they will vote for (<b>to model</b>).<br />
+</p>
+
+<p>
+We can use this remark to improve our intention estimates : we can assume that intention evolves <i>smoothly</i> over time, so very sharp evolution can be excluded. We will thus note that the current candidate support is a <i>smooth</i> function of the candidate support at previous time steps:<br />
+</p>
+
+\begin{align*}
+ \boldsymbol{y}_{t} &\sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{t}, S_{t}\right)\\
+  \boldsymbol{\pi}_t &\sim \operatorname{Dirichlet}\left(\boldsymbol{p}_t \right)\\
+  \boldsymbol{p}_t&= \operatorname{Softmax}(\boldsymbol{\mu}_t)\\
+  \boldsymbol{\mu}_t &= f\left(\boldsymbol{\mu}_0, \dots, \boldsymbol{\mu}_{t-1} \right)
+\end{align*}
+
+<p>
+We will explore several options for the time-dependence<br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a id="orgf78297a"></a><span class="todo TODO">TODO</span> Show how adding a random walk compares to estimating the latent intentions separately.<br /></li>
+<li><a id="orgd91cd0a"></a><span class="todo TODO">TODO</span> Show the "reservoir" of people which prevent larges swings with small model.<br /></li>
+</ul>
+
+<div id="outline-container-org47f29dd" class="outline-3">
+<h3 id="org47f29dd">Random walk</h3>
+<div class="outline-text-3" id="text-org47f29dd">
+<p>
+Markov process. Value at one time step only depends on the value at the previous time step.<br />
+</p>
+
+\begin{align*}
+  \boldsymbol{\mu}_{t}  &= \boldsymbol{\mu}_{t-1} + \boldsymbol{\epsilon} \\
+  \boldsymbol{\epsilon} &\sim \operatorname{MvNormal}(\boldsymbol{0}, \Sigma)
+\end{align*}
+
+<p>
+where \(\Sigma\) is the covariance matrix. We commonly assume that \(\Sigma\) has a diagonal structure, i.e. that there is no correlation in the time evolution of the score of different political families.<br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a id="orga28ec99"></a><span class="todo TODO">TODO</span> What is the interpretation for non-diagonal elements of \(\Sigma\)?<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-orgea59e8e" class="outline-3">
+<h3 id="orgea59e8e">Gaussian Processes</h3>
+<div class="outline-text-3" id="text-orgea59e8e">
+<p>
+We model the relation between the consecutive values of the vector \(\boldsymbol{\lambda}_t\) with gaussian processes with the standard square exponential kernel:<br />
+</p>
+
+\begin{align*}
+\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
+K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
+\end{align*}
+
+<p>
+Where \(\boldsymbol{\theta}\) is the <i>mean support</i> for each party, \(\Sigma\) is the <i>covariance matrix</i> between the different candidates, and \(\tau_i\) the <i>typical timescale</i> over which the support for candidate \(i\) changes. We currently assume that the covariance matrix is diagonal, i.e. that the parties' support evolve independently:<br />
+</p>
+
+\begin{equation*}
+\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
+\end{equation*}
+</div>
+
+<ul class="org-ul">
+<li><a id="org16dc27e"></a><span class="todo TODO">TODO</span> What are we using for \(\boldsymbol{\theta}\) in this model?<br /></li>
+<li><a id="org7bcbefa"></a><span class="todo TODO">TODO</span> How does it work when we are using several timescales?<br /></li>
+<li><a id="org9b3b045"></a><span class="todo TODO">TODO</span> What do timescales actually mean? Can we relate it to the amount of variation for the candidate support?<br /></li>
+<li><a id="org5138b36"></a><span class="todo TODO">TODO</span> How would you interpret the non diagonal elements of \(\Sigma\)? Can that be seen as support transfers?<br /></li>
+<li><a id="orged681f8"></a><span class="todo TODO">TODO</span> Try the other mean-reverting kernel, the Ornstein-Uhlenbeck kernel<br /></li>
+<li><a id="org09f854e"></a><span class="todo TODO">TODO</span> I don't see why the process should be stationary, try the Wiener kernel?<br /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org693a839" class="outline-2">
+<h2 id="org693a839">Polls and biases</h2>
+<div class="outline-text-2" id="text-org693a839">
+<p>
+Election polls also suffer from non-sampling errors. This error can manifest in a biased estimator, as well as a higher variance than would be expect from pure sampling errors.<br />
+</p>
+
+<p>
+In an ideal world pollsters could sample among people registered to vote uniformly at random, but this is of course not the case. In case of a phone interview, this would imply that everyone has a phone, is able to pick up the phone at all times, and is willing/has time to answer the survey. This is of course unrealistic; every poll suffers from sampling bias.<br />
+</p>
+</div>
+
+<div id="outline-container-orgc9ec5d5" class="outline-3">
+<h3 id="orgc9ec5d5">Sampling bias</h3>
+<div class="outline-text-3" id="text-orgc9ec5d5">
+<p>
+Two different pollsters \(\rho\) and \(\rho'\) will build their samples differently, there is thus a <i>pollster-specific sampling bias</i>. Some pollsters use different methods to build their sample depending on the poll. We can assume there also is a <i>method-specific bias</i>, conditioned on the sample. We will model the pollster-method bias with a random variable \(\tilde{\alpha}_{\rho,m}\), and will specify its distribution later.<br />
+</p>
+
+<p>
+\(\tilde{\alpha}_{\rho,m}\) is a crude proxy for a complex situation, but the only one we can craft in the absence of more information about the composition of the samples.<br />
+</p>
+</div>
+
+<div id="outline-container-orgf3e6db3" class="outline-4">
+<h4 id="orgf3e6db3">Non-response bias</h4>
+<div class="outline-text-4" id="text-orgf3e6db3">
+<p>
+See where the authors show that the opinion swings visible in election polls are probably due to <i>non-reponse bias</i>. People who perceive that their candidate is not doing well are less likely to report voting for them and answer surveys.<br />
+</p>
+
+<p>
+In our models we do not account for non-response bias, and I currently don't see how we could account for it without access to a fixed panel of individuals.<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org810d8d2" class="outline-3">
+<h3 id="org810d8d2">Sample adjustment</h3>
+<div class="outline-text-3" id="text-org810d8d2">
+<p>
+Pollsters however have more information about the composition of the sample as they usually ask information about the person's gender, age, job and their vote during previous elections. They then use <i>poststratification</i> methods to adjust the results they obtained with this sample to what would be measure with a perfect sample.<br />
+</p>
+
+<p>
+In the absence of this information, we assume that adjustment and sampling procedures remain the same for each pollster, and include both biases in the same random variable \(\alpha_{\rho,m}\).<br />
+</p>
+</div>
+
+<div id="outline-container-org0e143f2" class="outline-4">
+<h4 id="org0e143f2">Post-stratification</h4>
+<div class="outline-text-4" id="text-org0e143f2">
+<p>
+<br />
+compares different weighing methods with model-based (MRP) methods.<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgedb81bb" class="outline-4">
+<h4 id="orgedb81bb">Multilevel Regresion and Post-stratification (MRP)</h4>
+<div class="outline-text-4" id="text-orgedb81bb">
+<p>
+<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org908ad44" class="outline-3">
+<h3 id="org908ad44">Who will really vote?</h3>
+<div class="outline-text-3" id="text-org908ad44">
+<p>
+Talk about the false controversy about methods that try to only keep people who are likely to vote. There's no point taking into account the opinion who are <b>absolutely certain</b>, on the other hand some could change their mind so we cannot exclude everyone.<br />
+</p>
+
+
+<p>
+We describe the poll aggregation model that will be used in Pollsposition.<br />
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgfa0488a" class="outline-2">
+<h2 id="sec:aggregation"><a id="orgfa0488a"></a>Poll aggregation</h2>
+<div class="outline-text-2" id="text-sec:aggregation">
+<p>
+We model the results \(\boldsymbol{y}^{h}_t\) of the poll released by institute \(h \in \left\{1 \dots N_h \right\}\) for candidates \(c \in \left\{1 \dots N_c \right\}\) at time \(t \in \left\{1 \dots T_e\right\}\) with a \(N_c\) -dimensional random variable that follows a multinomial distribution:<br />
+</p>
+
+\begin{equation}
+ \boldsymbol{y}_{t}^{h} \sim \operatorname{Multinomial}\left(\boldsymbol{\pi}_{t}^{h}, S_{t}^{h}\right)
+\end{equation}
+
+<p>
+Where \(S_{t}^h\) is the sample size, and \(\boldsymbol{\pi}_{t}^h\) is usually interpreted and reported as the <i>voting intentions</i>. The voting intentions must sum to one, and we place a Dirichlet prior on the voting intentions:<br />
+</p>
+
+\begin{equation*}
+\boldsymbol{\pi}_{t}^{h} \sim \operatorname{Dirichlet}(\alpha\;\boldsymbol{p}_{t}^{h})
+\end{equation*}
+
+<p>
+where \(\alpha\) is a <i>concentration parameter</i> that accounts for overdispersion in the data:<br />
+</p>
+
+\begin{equation*}
+  \alpha \sim \operatorname{InverseGamma}(1000, 200)
+\end{equation*}
+
+<p>
+the first parameter of the \(\operatorname{InverseGamma}\) distribution can be interpreted as the polls' sample size and the second as thei standard deviation. \(\boldsymbol{p}_{t}^{h}\) is a vector given by<br />
+</p>
+
+\begin{equation*}
+\boldsymbol{p}_{t}^{h} = \operatorname{Softmax}(\boldsymbol{\mu}_{t}^{h})
+\end{equation*}
+
+<p>
+where \(\boldsymbol{\mu}_{t}^{h}\) is a vector that contains the <i>latent popularities</i> of the different candidates. The poll results we observe are thus a function of the sample size, and this latent popularity.<br />
+</p>
+
+<p>
+This vector can be further decomposed in several components and we will write<br />
+</p>
+
+\begin{equation*}
+ \boldsymbol{\mu}_{t}^{h} = \tilde{\boldsymbol{\lambda}} + \boldsymbol{\lambda}_{t} + \tilde{\boldsymbol{\eta}} + \boldsymbol{\eta}^h
+\end{equation*}
+
+<p>
+where \(\boldsymbol{\lambda}_t\) is the time-varying latent support of each candidate, \(\boldsymbol{\eta}^h\) the bias of the political institute \(h\) towards the candidates (house effect), and \(\tilde{\boldsymbol{\eta}}\) the polling market's bias towards the different candidates.<br />
+</p>
+</div>
+
+<div id="outline-container-orga4ccc35" class="outline-3">
+<h3 id="orga4ccc35">Time-varying latent support</h3>
+<div class="outline-text-3" id="text-orga4ccc35">
+<p>
+A core quantity is the support for each candidate in the election \(\boldsymbol{\lambda}_t\), and its evolution as new information (polls, special events, update in the fundamental data, etc) arrives.<br />
+</p>
+
+<p>
+We model the relation between the consecutive values of the vector \(\boldsymbol{\lambda}_t\) with gaussian processes with the standard square exponential kernel:<br />
+</p>
+
+\begin{align*}
+\boldsymbol{\lambda}_t &\sim \mathcal{GP}(\boldsymbol{\theta}, K)\\
+K\left(t, t'\right) &= \Sigma^2\; \exp\left(-\frac{1}{2} \sum_{i=1}^c \left(\frac{t'-t}{\tau_i}\right)^2 \right)
+\end{align*}
+
+<p>
+Where \(\boldsymbol{\theta}\) is the <i>mean support</i> for each party, \(\Sigma\) is the <i>covariance matrix</i> between the different candidates, and \(\tau_i\) the <i>typical timescale</i> over which the support for candidate \(i\) changes. We currently assume that the covariance matrix is diagonal, i.e. that the parties' support evolve independently:<br />
+</p>
+
+\begin{equation*}
+\Sigma = \operatorname{diag(\sigma_1, \dots, \sigma_c)}
+\end{equation*}
+</div>
+
+<ul class="org-ul">
+<li><a id="org586c004"></a><span class="todo TODO">TODO</span> What are we using for \(\boldsymbol{\theta}\) in this model?<br /></li>
+<li><a id="org781d408"></a><span class="todo TODO">TODO</span> How does it work when we are using several timescales?<br /></li>
+<li><a id="org51752d0"></a><span class="todo TODO">TODO</span> What do timescales actually mean? Can we relate it to the amount of variation for the candidate support?<br /></li>
+<li><a id="orge00246e"></a><span class="todo TODO">TODO</span> How would you interpret the non diagonal elements of \(\Sigma\)? Can that be seen as support transfers?<br /></li>
+<li><a id="orgabde913"></a><span class="todo TODO">TODO</span> Try the other mean-reverting kernel, the Ornstein-Uhlenbeck kernel<br /></li>
+<li><a id="orgc2a73d4"></a><span class="todo TODO">TODO</span> I don't see why the process should be stationary, try the Wiener kernel?<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org1b182c4" class="outline-3">
+<h3 id="org1b182c4">House effects</h3>
+<div class="outline-text-3" id="text-org1b182c4">
+</div>
+<div id="outline-container-org4897f14" class="outline-4">
+<h4 id="org4897f14">House effect</h4>
+<div class="outline-text-4" id="text-org4897f14">
+<p>
+The systematic differences betweent pollsters [538 pollster rating] need to enter the model. Pollsters differ in the ways they constitute their panel and the way they adjust results. We can separate house effects in two elements.<br />
+</p>
+
+<p>
+Each pollster also has its idiosyncratic bias regarding the different families:<br />
+</p>
+
+\begin{equation*}
+ \eta^{hc} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation*}
+</div>
+
+<ul class="org-ul">
+<li><a id="orgc25da08"></a><span class="todo TODO">TODO</span> Should this enter the variance of the estimate instead?<br /></li>
+<li><a id="orga4722b3"></a><span class="todo TODO">TODO</span> Why are we using a <code>ZeroSumNormal</code> distribution?<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org971c36f" class="outline-4">
+<h4 id="org971c36f">Poll bias</h4>
+<div class="outline-text-4" id="text-org971c36f">
+<p>
+In an ideal world the institutes' biases cancel each other off: an institute's overestimation of the far-right's score would be balanced by another institutes' underestimation. This is what would happen in the limit of a large number of polling institude should the biases be randomly distributed. But biases are not always randomly distributed, as shown in [Shirai-Mehr et al 2018]: there is often a measurable <i>polling market bias</i>.<br />
+</p>
+
+<p>
+We can measure it on past elections since we have the election results to compare the polls to, and use the model introduced in [S-M 2018]:<br />
+</p>
+
+<p>
+where \(v_i\) is the final vote share and \(\alpha_i\) thus represents the market bias. The authors use a hierarchical structure on the parameters \(\alpha_i\), \(\beta_j\) and \(\tau_j\) which respectively share the same prior distribution centered on 0.<br />
+</p>
+
+<p>
+Failure to account for correlated poll errors will lead to improper estimates (and later on, predictions). We thus need to account for this in our models. One way (which is visible what 538 does [ref needed]) is to "correct" the different candidates' score for the correlated error observed on past elections.<br />
+</p>
+
+<p>
+In the section<br />
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a id="orgc4ecd92"></a><span class="todo TODO">TODO</span> Measure this bias on past election data<br /></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb84c7a4" class="outline-2">
+<h2 id="sec:predict"><a id="orgb84c7a4"></a>Predict the result of the election</h2>
+<div class="outline-text-2" id="text-sec:predict">
+</div>
+
+<div id="outline-container-org0136be6" class="outline-3">
+<h3 id="org0136be6">Poll aggregator</h3>
+<div class="outline-text-3" id="text-org0136be6">
+\begin{equation*}
+ \mu^{hec}_t = \lambda^{c}_t + \tilde{\lambda}^{c} + \beta_U\;U_t + \eta^{hec} + \tilde{\eta}^f
+\end{equation*}
+</div>
+</div>
+
+<div id="outline-container-orgd5fd39b" class="outline-3">
+<h3 id="orgd5fd39b">Fundamentals model</h3>
+<div class="outline-text-3" id="text-orgd5fd39b">
+<p>
+The second model tries to forecast the result of the election on election day. The election is a big poll, but that is completely unbiased by definition. If we note \(t_0\) the date of the election day we can write:<br />
+</p>
+
+\begin{align*}
+ \boldsymbol{R}_{t_0} &\sim \operatorname{Multinomial}\left(\boldsymbol{\tilde{\pi}}, S\right) \\
+ \boldsymbol{\tilde{\pi}} &\sim \operatorname{Dirichlet}(\alpha^{F}\;\boldsymbol{p}_{t_0})\\
+  \alpha^{F} &\sim \operatorname{InverseGamma}(1000, 200)\\
+ \boldsymbol{p}_{t_0} &= \operatorname{Softmax}(\boldsymbol{\mu}_{t_0})\\
+  \mu_{t_0} &= \lambda^{f}_{t_0} + \tilde{\lambda}^{f} + \beta_U\,U_{t_0}
+\end{align*}
+</div>
+
+<ul class="org-ul">
+<li><a id="orgf730c8f"></a><span class="todo TODO">TODO</span> Do we need overdispersion here?<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org0fe0a43" class="outline-3">
+<h3 id="org0fe0a43">Candidate support</h3>
+<div class="outline-text-3" id="text-org0fe0a43">
+</div>
+<div id="outline-container-org5e733d3" class="outline-4">
+<h4 id="org5e733d3">Baseline</h4>
+<div class="outline-text-4" id="text-org5e733d3">
+<p>
+We first assume that each political family \(f\) has a baseline amount of popular support, and that the variations we observe during the campaign are variations around that baseline \(\tilde{\lambda}^f\).<br />
+</p>
+
+\begin{align*}
+  \sigma_{\lambda} &\sim \operatorname{HalfNormal}(0.5)\\
+  \tilde{\lambda}^{f} &\sim \operatorname{ZeroSumNormal}(0, \sigma_{\lambda})
+\end{align*}
+</div>
+
+<ul class="org-ul">
+<li><a id="org7c85b5c"></a><span class="todo TODO">TODO</span> Why ZeroSumNormal here?<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-org140fcf1" class="outline-4">
+<h4 id="org140fcf1">Evolution during the election</h4>
+</div>
+</div>
+
+<div id="outline-container-org8063272" class="outline-3">
+<h3 id="org8063272">House effects</h3>
+<div class="outline-text-3" id="text-org8063272">
+<p>
+Pollsters differ in the ways they constitute their panel and the way they adjust results. We can separate house effects in two elements.<br />
+</p>
+
+<p>
+The first element, the systemic poll bias \(\zeta_f\), is shared by every pollster for each political family \(f\):<br />
+</p>
+
+\begin{equation}
+ \tilde{\zeta}_{f} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+
+<p>
+Each pollster also has its idiosyncratic bias regarding the different families:<br />
+</p>
+
+\begin{equation}
+ \zeta_{hf} \sim \operatorname{ZeroSumNormal}(0, 0.15)
+\end{equation}
+</div>
+
+<ul class="org-ul">
+<li><a id="org48ca74e"></a><span class="todo TODO">TODO</span> Why the <code>ZeroSumNormal</code> here too?<br />
+<div class="outline-text-6" id="text-org48ca74e">
+<blockquote>
+<p>
+Making sure that our different effects sum to zero. Think about the month effect. It only makes sense in a relative sense: some months are better than average, some others are worse, but you can't have only good months &#x2013; they'd be good compared to what? So we want to make sure that the average month effect is 0, while allowing each month to be better or worse than average if needed. And the reasoning is the same for house effects for instance &#x2013; can you see why?<br />
+</p>
+</blockquote>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org5a010ce" class="outline-2">
+<h2 id="sec:discussion"><a id="org5a010ce"></a>Discussion</h2>
+<div class="outline-text-2" id="text-sec:discussion">
+</div>
+</div>
+</div>
+</body>
+</html>

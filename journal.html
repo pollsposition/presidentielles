@@ -1,0 +1,2508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-08-12 Fri 17:20 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Présidentielles 2022</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Rémi Louf, Alexandre Andorra" />
+<meta name="description" content="Load the virtual environment
+Import needed libraries"
+ />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="style.css" /><script data-goatcounter="https://thetypicalset.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Présidentielles 2022
+<br />
+<span class="subtitle">Cahier de laboratoire</span>
+</h1>
+<p>
+Dans ce document nous recensons les analyses que nous avons pu faire au jour le jours.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">(pyvenv-workon 'polls)
+</pre>
+</div>
+<div id="outline-container-org2042ad7" class="outline-2">
+<h2 id="org2042ad7">Liens utiles</h2>
+<div class="outline-text-2" id="text-org2042ad7">
+<p>
+Lien vers les pages présidentielles 2022 des instituts de sondage:
+</p>
+<ul class="org-ul">
+<li><a href="https://presidentielle2022.bva-group.com/intentions-vote/">BVA</a></li>
+<li><a href="http://www.odoxa.fr/sondages/dispositif-presidentielle-2022/">Odoxa</a></li>
+<li><a href="https://elabe.fr/tag/presidentielle-2022/">Elabe</a></li>
+<li><a href="https://www.opinion-way.com/fr/sondage-d-opinion/sondages-publies/politique/presidentielle-2022/2022.html">Opinionway</a></li>
+<li><a href="https://cluster17.com/intentions-de-votes-des-clusters-presidentielle-2022/">Cluster 17</a></li>
+<li><a href="https://www.ipsos.com/fr-fr/search?search=Pr%C3%A9sidentielle%202022">Ipsos</a></li>
+<li><a href="https://www.ifop.com/presidentielle-2022/">Ifop</a></li>
+<li><a href="https://harris-interactive.fr/opinion_polls/barometre-dintentions-de-vote-pour-lelection-presidentielle-de-2022-vague-28/">Harris</a></li>
+</ul>
+
+<p>
+Voir aussi le <a href="https://www.commission-des-sondages.fr/notices/">site de la Commission des Sondages</a>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd442763" class="outline-2">
+<h2 id="orgd442763">Décembre 2021</h2>
+<div class="outline-text-2" id="text-orgd442763">
+</div>
+<div id="outline-container-org0a8a6d3" class="outline-3">
+<h3 id="org0a8a6d3">Odoxa 09.12</h3>
+<div class="outline-text-3" id="text-org0a8a6d3">
+<p>
+Premier sondage d'Odoxa après l'officialisation de la candidature de Pécresse pour Les Républicains.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = 1391
+<span style="font-weight: bold; font-style: italic;">precision</span> = 0.25
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Arthaud"</span>: 1,
+    <span style="font-style: italic;">"Poutou"</span>: 1.5,
+    <span style="font-style: italic;">"Roussel"</span>: 2,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 10,
+    <span style="font-style: italic;">"Montebourg"</span>: 1,
+    <span style="font-style: italic;">"Hidalgo"</span>: 3,
+    <span style="font-style: italic;">"Jadot"</span>: 6,
+    <span style="font-style: italic;">"Macron"</span>: 24,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 19,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2.5,
+    <span style="font-style: italic;">"Zemmour"</span>: 12,
+    <span style="font-style: italic;">"Le Pen"</span>: 17,
+    <span style="font-style: italic;">"Lassalle"</span>: 1,
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> bva:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+        [1, 1.5, 2, 10, 1, 3, 6, 24, 19, 2.5, 12, 17, 1]
+    ) * 0.1
+    <span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+    <span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">Prior too vague?</span>
+    <span style="font-weight: bold; font-style: italic;">r</span> = pm.Dirichlet(<span style="font-style: italic;">"real_ratios"</span>, num_exprimes * p, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-5lYmj3/figureEAx2hR.png" alt="figureEAx2hR.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"09/12/2021"</span>,
+    <span style="font-style: italic;">"Odoxa pour L'OBS et mascaret"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Comptant aller voter et exprimant une opinion"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+<div class="figure">
+<p><img src="file:///tmp/babel-5lYmj3/figure7ejmnm.png" alt="figure7ejmnm.png" />
+</p>
+</div>
+
+
+<p>
+Odoxa ne spécifie pas le % de gens qui sont surs de leur choix, impossible de donner d'autre information.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0c10dbe" class="outline-3">
+<h3 id="org0c10dbe">BVA 08.12</h3>
+<div class="outline-text-3" id="text-org0c10dbe">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = 894
+<span style="font-weight: bold; font-style: italic;">precision</span> = 0.25
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Arthaud"</span>: .5,
+    <span style="font-style: italic;">"Poutou"</span>: 1.5,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 9,
+    <span style="font-style: italic;">"Roussel"</span>: 2.5,
+    <span style="font-style: italic;">"Montebourg"</span>: 1,
+    <span style="font-style: italic;">"Hidalgo"</span>: 5,
+    <span style="font-style: italic;">"Jadot"</span>: 7,
+    <span style="font-style: italic;">"Macron"</span>: 24,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 17,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2.5,
+    <span style="font-style: italic;">"Zemmour"</span>: 13,
+    <span style="font-style: italic;">"Le Pen"</span>: 16,
+    <span style="font-style: italic;">"Lassalle"</span>: 1,
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> bva:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+        [.5, 1.5, 9, 2.5, 1, 5, 7, 24, 17, 2.5, 13, 16, 1]
+    )
+    <span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+    <span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">Prior too vague?</span>
+    <span style="font-weight: bold; font-style: italic;">r</span> = pm.Dirichlet(<span style="font-style: italic;">"real_ratios"</span>, num_exprimes * p, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-VWjkW3/figure0p2VLy.png" alt="figure0p2VLy.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"08/12/2021"</span>,
+    <span style="font-style: italic;">"BVA pour Orange et RTL"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Certains d'aller voter et exprimant une opinion"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-VWjkW3/figurePTbhcD.png" alt="figurePTbhcD.png" />
+</p>
+</div>
+
+<p>
+Il serait quand même judicieux de mettre les gens n'ayant pas exprimé d'opinion sur les graphes.
+</p>
+</div>
+
+<div id="outline-container-org2b0152e" class="outline-4">
+<h4 id="org2b0152e">Intentions de vote des gens sûrs leur choix</h4>
+<div class="outline-text-4" id="text-org2b0152e">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> math
+
+<span style="font-weight: bold; font-style: italic;">certains_total</span> = 71
+<span style="font-weight: bold; font-style: italic;">certains</span> = {
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 74,
+    <span style="font-style: italic;">"Hidalgo"</span>: 51,
+    <span style="font-style: italic;">"Jadot"</span>: 48,
+    <span style="font-style: italic;">"Macron"</span>: 73,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 60,
+    <span style="font-style: italic;">"Zemmour"</span>: 65,
+    <span style="font-style: italic;">"Le Pen"</span>: 74,
+}
+
+<span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">On fait l'hypoth&#232;se (assez bien v&#233;rifi&#233; quand on regarde les chiffres)</span>
+<span style="font-weight: bold; font-style: italic;">resultats_certains</span> = {}
+<span style="font-weight: bold; font-style: italic;">total</span> = 0
+<span style="font-weight: bold; font-style: italic;">remaining</span> = 0
+<span style="font-weight: bold;">for</span> i, c <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats):
+    <span style="font-weight: bold;">try</span>:
+        <span style="font-weight: bold; font-style: italic;">num_certains</span> = trace[<span style="font-style: italic;">'intentions'</span>][:, i] * certains[c] / 100
+        <span style="font-weight: bold; font-style: italic;">resultats_certains</span>[c] = num_certains
+        <span style="font-weight: bold; font-style: italic;">total</span> += num_certains
+    <span style="font-weight: bold;">except</span>:
+        <span style="font-weight: bold; font-style: italic;">resultats_certains</span>[c] = trace[<span style="font-style: italic;">'intentions'</span>][:, i]
+        <span style="font-weight: bold; font-style: italic;">total</span> += trace[<span style="font-style: italic;">'intentions'</span>][:, i]
+
+<span style="font-weight: bold;">for</span> c <span style="font-weight: bold;">in</span> resultats:
+    <span style="font-weight: bold; font-style: italic;">resultats_certains</span>[c] /= total
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: v <span style="font-weight: bold;">for</span> k, v <span style="font-weight: bold;">in</span> resultats_certains.items()}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"08/12/2021"</span>,
+    <span style="font-style: italic;">"BVA pour Orange et RTL"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Certains d'aller voter et s&#251;rs de leur choix"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-OuSpkx/figurehbOufB.png" alt="figurehbOufB.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5366270" class="outline-3">
+<h3 id="org5366270">Distribution multinomiale comme modèle d'observation&#xa0;&#xa0;&#xa0;<span class="tag"><span class="model">model</span></span></h3>
+<div class="outline-text-3" id="text-org5366270">
+<p>
+Je prends pour acquis depuis le début que le modèle Dirichlet-Dirichlet donne les mêmes résultats que le modèle Dirichlet-Multinomial correspondant, mais cela n'a rien d'évident.
+</p>
+
+<p>
+J'ai rencontré l'idée la première fois dans cette <a href="https://liu.diva-portal.org/smash/get/diva2:945786/FULLTEXT01.pdf">thèse de master</a> (3.1.2.5). Alors que la pertinence du modèle d'observation multinomial se justifie très bien ici, celle du modèle d'observation dirichlet pour les ratios est à confirmer (les résultats ont l'air semblables) mathématiquement.
+</p>
+
+<p>
+Les instituts de sondages ne donnent pas les valeurs des intentions brutes mais il les arrondissent à l'entier le plus proche (ou demi-point de pourcentage le plus proche) ce qui induit une incertitude supplémentaire. Décidons d'abandonner le modèle Dirichlet-Dirichlet pour l'instant pour revenir à un modèle Dirichlet-Multinomial basique. On y inclut directement l'effet de l'arrondi, en disant que l'on n'oberver pas directement le ratio \(r\) mais \(\tilde{r}\) :
+</p>
+
+<div class="org-src-container">
+<pre class="src src-latex"><span style="font-weight: bold;">\begin</span>{<span style="font-weight: bold;">align*</span>}
+  <span style="font-weight: bold;">\boldsymbol</span>{<span style="font-weight: bold;">p</span>} &amp;<span style="font-weight: bold;">\sim</span> <span style="font-weight: bold;">\operatorname</span>{Dirichlet}(<span style="font-weight: bold;">\boldsymbol</span>{<span style="font-weight: bold;">\alpha</span>})<span style="font-weight: bold;">\\</span>
+  <span style="font-weight: bold;">\mathbf</span>{n}  &amp;<span style="font-weight: bold;">\sim</span> <span style="font-weight: bold;">\operatorname</span>{Multinomial}<span style="font-weight: bold;">\left</span>(<span style="font-weight: bold;">\mathbf</span>{p}, N)<span style="font-weight: bold;">\\</span>
+  <span style="font-weight: bold;">\mathbf</span>{r}  &amp;= <span style="font-weight: bold;">\frac</span>{<span style="font-weight: bold;">\mathbf</span>{n}}{N}<span style="font-weight: bold;">\\</span>
+  <span style="font-weight: bold;">\tilde</span>{<span style="font-weight: bold;">\mathbf</span>{r}} &amp;<span style="font-weight: bold;">\sim</span> <span style="font-weight: bold;">\operatorname</span>{Uniform}(<span style="font-weight: bold;">\mathrm</span>{r}-<span style="font-weight: bold;">\delta</span>, <span style="font-weight: bold;">\mathrm</span>{r}+<span style="font-weight: bold;">\delta</span>)<span style="font-weight: bold;">\\</span>
+<span style="font-weight: bold;">\end</span>{<span style="font-weight: bold;">align*</span>}
+</pre>
+</div>
+\begin{align*}
+  \boldsymbol{p} &\sim \operatorname{Dirichlet}(\boldsymbol{\alpha})\\
+  \mathbf{n}  &\sim \operatorname{Multinomial}\left(\mathbf{p}, N)\\
+  \mathbf{r}  &= \frac{\mathbf{n}}{N}\\
+  \tilde{\mathbf{r}} &\sim \operatorname{Uniform}(\mathrm{r}-\delta, \mathrm{r}+\delta)\\
+\end{align*}
+
+<p>
+Le modèle s'implémente très facilement dans PyMC3:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+        [.5, 1.5, 9, 2.5, 1, 5, 7, 24, 17, 2.5, 13, 16, 1]
+    ) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-B798aL/figure3RFaIr.png" alt="figure3RFaIr.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"08/12/2021"</span>,
+    <span style="font-style: italic;">"BVA pour Orange et RTL"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Certains d'aller voter et exprimant une opinion"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+<span style="font-weight: bold;">print</span>(filename)
+</pre>
+</div>
+
+<p>
+<a href="None">None</a>
+</p>
+
+<p>
+On voit que les intervalles de confiance sont légèrement élargis. /Supposons maintenant que les résultats sont données à plus ou moins un point près!
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = 1. / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+        [.5, 1.5, 9, 2.5, 1, 5, 7, 24, 17, 2.5, 13, 16, 1]
+    )
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-OuSpkx/figureqJfd6w.png" alt="figureqJfd6w.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"08/12/2021"</span>,
+    <span style="font-style: italic;">"BVA pour Orange et RTL"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Certains d'aller voter et exprimant une opinion"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-3mBQmE/figureQeoqFc.png" alt="figureQeoqFc.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga105dd9" class="outline-3">
+<h3 id="orga105dd9">Pairwise comparisons&#xa0;&#xa0;&#xa0;<span class="tag"><span class="viz">viz</span></span></h3>
+<div class="outline-text-3" id="text-orga105dd9">
+<p>
+<span class="timestamp-wrapper"><span class="timestamp">[2021-12-14 Tue]</span></span>
+</p>
+
+<p>
+Randomly scattering points does not give great results. can probably improve the layout using <i>blue noise</i>. The idea to get a good enough plot (we're not aiming for accuracy on <b>these</b> plots) would be to:
+</p>
+
+<ol class="org-ol">
+<li><a href="https://github.com/rougier/scientific-visualization-book/blob/master/code/beyond/bluenoise.py">Generate</a> a set of points \(N_p\) st \(N_p \gg 100\) between -20% et +20%</li>
+<li>For each simulation, find the point with the closest x value. Set to occupied.</li>
+<li>Then only display the occupied circles.</li>
+</ol>
+
+<p>
+<span class="timestamp-wrapper"><span class="timestamp">[2021-12-15 Wed]</span></span>
+</p>
+
+
+<p>
+Dans le contexte d'une primaire à gauche comparons les résultats des différents candidats:
+</p>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-B798aL/atyK4m.png" alt="atyK4m.png" />
+</p>
+</div>
+
+
+<p>
+regardons les résultats potentiels de "l'union de la gauche":
+</p>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-B798aL/t4Ws7E.png" alt="t4Ws7E.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Le Pen"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"P&#233;cresse"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"optimized.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href=""></a>
+</p>
+</div>
+
+<ul class="org-ul">
+<li><a id="orga49e0bf"></a><span class="done DONE">DONE</span> Ajouter légende sur le graphe<br /></li>
+<li><a id="orgd37eeac"></a><span class="done DONE">DONE</span> Placer points avec blue noise<br /></li>
+<li><a id="org573b5ef"></a><span class="done DONE">DONE</span> Compute location of vertical lines automatically<br /></li>
+</ul>
+</div>
+
+<div id="outline-container-orge07f571" class="outline-3">
+<h3 id="orge07f571">Harris 13.12</h3>
+<div class="outline-text-3" id="text-orge07f571">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = <span style="font-weight: bold;">int</span>(2159 * (1-0.12))
+<span style="font-weight: bold; font-style: italic;">precision</span> = 0.5
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-weight: bold; font-style: italic;">#</span><span style="font-weight: bold; font-style: italic;">"Arthaud": 0,</span>
+    <span style="font-style: italic;">"Poutou"</span>: 1,
+    <span style="font-style: italic;">"Roussel"</span>: 2,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 11,
+    <span style="font-style: italic;">"Montebourg"</span>: 1,
+    <span style="font-style: italic;">"Hidalgo"</span>: 4,
+    <span style="font-style: italic;">"Jadot"</span>: 7,
+    <span style="font-style: italic;">"Macron"</span>: 24,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 17,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2,
+    <span style="font-style: italic;">"Zemmour"</span>: 15,
+    <span style="font-style: italic;">"Le Pen"</span>: 16,
+    <span style="font-weight: bold; font-style: italic;">#</span><span style="font-weight: bold; font-style: italic;">"Lassalle": 0,</span>
+    <span style="font-weight: bold; font-style: italic;">#</span><span style="font-weight: bold; font-style: italic;">"Philippot": 0,</span>
+    <span style="font-weight: bold; font-style: italic;">#</span><span style="font-weight: bold; font-style: italic;">"Asselineau": 0,</span>
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+        [1, 2, 11, 1, 4, 7, 24, 17, 2, 15, 16]
+    ) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-B798aL/figurek2eqJC.png" alt="figurek2eqJC.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"13/12/2021"</span>,
+    <span style="font-style: italic;">"Harris interactive for Challenges"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Inscrits sur les listes &#233;lectorales"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=600, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-B798aL/figure9jWzjU.png" alt="figure9jWzjU.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    <span style="font-style: italic;">"P&#233;cresse"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-B798aL/veCirZ.png" alt="veCirZ.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Le Pen"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"P&#233;cresse"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"lepenpecresse.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href="file:///tmp/babel-B798aL/python-xgnGdG">file:///tmp/babel-B798aL/python-xgnGdG</a>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Le Pen"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"Zemmour"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"zemmourlepen.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href="file:///tmp/babel-DLNTuj/python-81vzJb">file:///tmp/babel-DLNTuj/python-81vzJb</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5da1a3d" class="outline-3">
+<h3 id="org5da1a3d">Opinionway 15.12</h3>
+<div class="outline-text-3" id="text-org5da1a3d">
+</div>
+<div id="outline-container-org10f8ba6" class="outline-4">
+<h4 id="org10f8ba6">Premier tour</h4>
+<div class="outline-text-4" id="text-org10f8ba6">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = <span style="font-weight: bold;">int</span>(1470 * (1-0.16))
+<span style="font-weight: bold; font-style: italic;">precision</span> = 1.
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Arthaud"</span>: 1,
+    <span style="font-style: italic;">"Poutou"</span>: 1,
+    <span style="font-style: italic;">"Roussel"</span>: 3,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 9,
+    <span style="font-style: italic;">"Montebourg"</span>: 2,
+    <span style="font-style: italic;">"Hidalgo"</span>: 4,
+    <span style="font-style: italic;">"Jadot"</span>: 8,
+    <span style="font-style: italic;">"Macron"</span>: 24,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 17,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2,
+    <span style="font-style: italic;">"Zemmour"</span>: 12,
+    <span style="font-style: italic;">"Le Pen"</span>: 16,
+    <span style="font-style: italic;">"Lassalle"</span>: 1,
+    <span style="font-weight: bold; font-style: italic;">#</span><span style="font-weight: bold; font-style: italic;">"Philippot": 0,</span>
+    <span style="font-weight: bold; font-style: italic;">#</span><span style="font-weight: bold; font-style: italic;">"Asselineau": 0,</span>
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+        [1, 1, 3, 9, 2, 4, 8, 24, 17, 2, 12, 16, 1]
+    ) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-SJxqMQ/figuresvVTFe.png" alt="figuresvVTFe.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"15/12/2021"</span>,
+    <span style="font-style: italic;">"Opinionway pour Les Echos et Radio Classique"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Inscrits sur les listes &#233;lectorales"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-SJxqMQ/figure2M59Zh.png" alt="figure2M59Zh.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    <span style="font-style: italic;">"P&#233;cresse"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-SJxqMQ/vAkUGN.png" alt="vAkUGN.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Jadot"</span>,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-SJxqMQ/Fnmff2.png" alt="Fnmff2.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Zemmour"</span>,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-SJxqMQ/U9UISJ.png" alt="U9UISJ.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Hidalgo"</span>,
+    <span style="font-style: italic;">"Roussel"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-SJxqMQ/y8Aq8J.png" alt="y8Aq8J.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Le Pen"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"P&#233;cresse"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"lepenpecresse.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href=""></a>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Jadot"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"M&#233;lenchon"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"jadotmelenchon.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href=""></a>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Zemmour"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"M&#233;lenchon"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"zemmourmelenchon.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href=""></a>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Hidalgo"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"Roussel"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"hidalgoroussel.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href="file:///tmp/babel-SJxqMQ/python-u2NVUf">file:///tmp/babel-SJxqMQ/python-u2NVUf</a>
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Montebourg"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"Roussel"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"montebourgroussel.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href="file:///tmp/babel-SJxqMQ/python-q6atyq">file:///tmp/babel-SJxqMQ/python-q6atyq</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga37757f" class="outline-4">
+<h4 id="orga37757f">Second tour</h4>
+<div class="outline-text-4" id="text-orga37757f">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">nspp</span> = 40
+<span style="font-weight: bold; font-style: italic;">num_exprimes</span> = <span style="font-weight: bold;">int</span>(1470 * (1-nspp/100))
+<span style="font-weight: bold; font-style: italic;">precision</span> = 1.
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Macron"</span>: 54,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 46,
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(
+        [50, 50]
+    ) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Dirichlet(<span style="font-style: italic;">"respondants"</span>, num_exprimes * p, observed=results_r)
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-4wR0Ij/figureWCEwG9.png" alt="figureWCEwG9.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_decided_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_decided_r,
+    colors,
+    <span style="font-style: italic;">"Macron"</span>,
+    <span style="font-style: italic;">"P&#233;cresse"</span>,
+    title=<span style="font-style: italic;">"Diff&#233;rence d'intentions de vote au 2nd tour"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-4wR0Ij/dl5xun.png" alt="dl5xun.png" />
+</p>
+</div>
+
+
+<p>
+Ok mais il y a 40% d'indécis! Que se passe-t-il si on les réparti aléatoirement?
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">num_indecis</span> = 1470 * nspp / 100
+
+<span style="font-weight: bold; font-style: italic;">rng</span> = np.random.default_rng()
+<span style="font-weight: bold; font-style: italic;">transition_i</span> = rng.dirichlet(np.ones(2), size=4000).T
+
+<span style="font-weight: bold; font-style: italic;">intentions</span> = {
+    c: num_exprimes * intentions_decided_r[c] <span style="font-weight: bold;">for</span> c <span style="font-weight: bold;">in</span> resultats
+}
+<span style="font-weight: bold; font-style: italic;">intentions_values</span> = np.stack(intentions.values())
+<span style="font-weight: bold; font-style: italic;">intentions_randomized</span> = intentions_values + num_indecis * transition_i
+<span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: intentions_randomized[i]/1470 <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Macron"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"P&#233;cresse"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        title=<span style="font-style: italic;">"Si tous les ind&#233;cis choisissaient au hasard"</span>,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"secontourhalfrandomized.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href="file:///tmp/babel-4wR0Ij/python-ALLVQT">file:///tmp/babel-4wR0Ij/python-ALLVQT</a>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5751c15" class="outline-3">
+<h3 id="org5751c15">Cluster17  15.12</h3>
+<div class="outline-text-3" id="text-org5751c15">
+<p>
+<span class="timestamp-wrapper"><span class="timestamp">[2021-12-19 Sun]</span></span>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = 1446
+<span style="font-weight: bold; font-style: italic;">precision</span> = .25
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Arthaud"</span>: .5,
+    <span style="font-style: italic;">"Poutou"</span>: 1,
+    <span style="font-style: italic;">"Roussel"</span>: 2,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 13,
+    <span style="font-style: italic;">"Montebourg"</span>: 1,
+    <span style="font-style: italic;">"Hidalgo"</span>: 3,
+    <span style="font-style: italic;">"Jadot"</span>: 5,
+    <span style="font-style: italic;">"Macron"</span>: 22,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 18,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 1.5,
+    <span style="font-style: italic;">"Zemmour"</span>: 15,
+    <span style="font-style: italic;">"Le Pen"</span>: 15,
+    <span style="font-style: italic;">"Lassalle"</span>: 1,
+    <span style="font-style: italic;">"Philippot"</span>: 1,
+    <span style="font-style: italic;">"Asselineau"</span>: 1,
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<p>
+On utilise le modèle Dirichlet-Multinomial avec une distribution uniforme pour modéliser l'arrondi :
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+<p>
+On vérifie que tout s'est bien passé :
+</p>
+
+<p>
+Puis on trace les intentions de vote
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"15/12/2021"</span>,
+    <span style="font-style: italic;">"Cluster17"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Inscrits sur les listes &#233;lectorales"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-QyY88v/figureKjkeQG.png" alt="figureKjkeQG.png" />
+</p>
+</div>
+
+<p>
+Pour la première fois Mélenchon a une chance non-nulle d'arriver devant MLP :
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+<p>
+Sous forme de gif animé :
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Le Pen"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"M&#233;lenchon"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"lepenmelenchon.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+Et l'on trace les comparaisons les plus pertinentes compte-tenu de la proximité des candidats en terme de score, ou de la situation politique (primaire à gauche ici)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Hidalgo"</span>,
+    <span style="font-style: italic;">"Jadot"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    <span style="font-style: italic;">"Zemmour"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    <span style="font-style: italic;">"P&#233;cresse"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    <span style="font-style: italic;">"Jadot"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5edd24e" class="outline-3">
+<h3 id="org5edd24e">Ipsos</h3>
+<div class="outline-text-3" id="text-org5edd24e">
+<p>
+<span class="timestamp-wrapper"><span class="timestamp">[2021-12-19 Sun]</span></span>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = <span style="font-weight: bold;">int</span>(10928 * 0.61 * (1-.06))
+<span style="font-weight: bold; font-style: italic;">precision</span> = .25
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Poutou"</span>: 1.5,
+    <span style="font-style: italic;">"Arthaud"</span>: 0.5,
+    <span style="font-style: italic;">"Roussel"</span>: 2,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 8.5,
+    <span style="font-style: italic;">"Montebourg"</span>: 1.5,
+    <span style="font-style: italic;">"Hidalgo"</span>: 4.5,
+    <span style="font-style: italic;">"Jadot"</span>: 8.5,
+    <span style="font-style: italic;">"Macron"</span>: 24,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 17,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2,
+    <span style="font-style: italic;">"Zemmour"</span>: 14.5,
+    <span style="font-style: italic;">"Le Pen"</span>: 14.5,
+    <span style="font-style: italic;">"Lassalle"</span>: 1,
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<p>
+On utilise le modèle Dirichlet-Multinomial avec une distribution uniforme pour modéliser l'arrondi :
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Dirichlet(<span style="font-style: italic;">"respondants"</span>, num_exprimes * p, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+<p>
+On vérifie que tout s'est bien passé :
+</p>
+
+
+<div class="figure">
+<p><img src="file:///tmp/figureSp0UjM.png" alt="figureSp0UjM.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"13/12/2021"</span>,
+    <span style="font-style: italic;">"Ipsos"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Certains d'aller voter (61% des interrog&#233;s)"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/figureGsopf6.png" alt="figureGsopf6.png" />
+</p>
+</div>
+
+<p>
+La différence avec le sondage de Cluster17 est flagrante et souligne la nécessité d'avoir un agrégateur. C'est je pense  cocasse pour la plupart des gens de voir des résultats très différents le matin et le soir de la même journée.
+</p>
+</div>
+</div>
+<div id="outline-container-org528ef12" class="outline-3">
+<h3 id="org528ef12">Ifop</h3>
+<div class="outline-text-3" id="text-org528ef12">
+<p>
+<span class="timestamp-wrapper"><span class="timestamp">[2021-12-20 Mon]</span></span>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = 1017
+<span style="font-weight: bold; font-style: italic;">precision</span> = .25
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Poutou"</span>: 0.5,
+    <span style="font-style: italic;">"Roussel"</span>: 3,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 9.5,
+    <span style="font-style: italic;">"Montebourg"</span>: 1,
+    <span style="font-style: italic;">"Hidalgo"</span>: 4.5,
+    <span style="font-style: italic;">"Jadot"</span>: 7.5,
+    <span style="font-style: italic;">"Macron"</span>: 25.5,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 18,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2,
+    <span style="font-style: italic;">"Zemmour"</span>: 12,
+    <span style="font-style: italic;">"Le Pen"</span>: 16,
+    <span style="font-style: italic;">"Lassalle"</span>: 0.5,
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-FRO4Hm/figureWs6u38.png" alt="figureWs6u38.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"15/12/2021"</span>,
+    <span style="font-style: italic;">"Ifop"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Inscrits sur les listes &#233;lectorales"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-FRO4Hm/figuretjIX6i.png" alt="figuretjIX6i.png" />
+</p>
+</div>
+
+<p>
+Plusieurs duels sont intéressants:
+</p>
+<ul class="org-ul">
+<li>Zemmour / Le Pen</li>
+<li>Le Pen / Pécresse</li>
+<li>Mélenchon / Zemmour</li>
+<li>Jadot / Mélenchon</li>
+<li>Hidalgo / Roussel</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Zemmour"</span>,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-FRO4Hm/DtxabL.png" alt="DtxabL.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"P&#233;cresse"</span>,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-FRO4Hm/JPKuR4.png" alt="JPKuR4.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Zemmour"</span>,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-FRO4Hm/mUHqqS.png" alt="mUHqqS.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Zemmour"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"M&#233;lenchon"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"zemmourmelenchon.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href=""></a>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Jadot"</span>,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-FRO4Hm/b6DvWw.png" alt="b6DvWw.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Jadot"</span>,
+    <span style="font-style: italic;">"Hidalgo"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Roussel"</span>,
+    <span style="font-style: italic;">"Hidalgo"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-FRO4Hm/hfrr4Z.png" alt="hfrr4Z.png" />
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org1be8614" class="outline-3">
+<h3 id="org1be8614">Elabe</h3>
+<div class="outline-text-3" id="text-org1be8614">
+<p>
+<span class="timestamp-wrapper"><span class="timestamp">[2021-12-22 Wed]</span></span>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = <span style="font-weight: bold;">int</span>(1351 * (1-.12) * 0.8)
+<span style="font-weight: bold; font-style: italic;">precision</span> = .5
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Arthaud"</span>: 1,
+    <span style="font-style: italic;">"Poutou"</span>: 1,
+    <span style="font-style: italic;">"Roussel"</span>: 1,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 11,
+    <span style="font-style: italic;">"Montebourg"</span>: 2,
+    <span style="font-style: italic;">"Hidalgo"</span>: 3,
+    <span style="font-style: italic;">"Jadot"</span>: 5,
+    <span style="font-style: italic;">"Macron"</span>: 26,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 17,
+    <span style="font-style: italic;">"Lassalle"</span>: 1,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2,
+    <span style="font-style: italic;">"Philippot"</span>: 1,
+    <span style="font-style: italic;">"Le Pen"</span>: 16,
+    <span style="font-style: italic;">"Zemmour"</span>: 13,
+}
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-9JwRqu/figure8KYFlv.png" alt="figure8KYFlv.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"20/12/2021"</span>,
+    <span style="font-style: italic;">"Elabe"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Comptant aller voter (80% des inscrits)"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-9JwRqu/figureTSxadC.png" alt="figureTSxadC.png" />
+</p>
+</div>
+
+
+<p>
+Duals intéressants:
+</p>
+<ul class="org-ul">
+<li>Pécresse / Le Pen</li>
+<li>Le Pen / Zemmour</li>
+<li>Mélenchon / Zemmour</li>
+<li>Primaire de la gauche</li>
+</ul>
+</div>
+
+<div id="outline-container-orgb67d051" class="outline-4">
+<h4 id="orgb67d051">Qualification au 2nd tour: Le Pen / Pécresse</h4>
+<div class="outline-text-4" id="text-orgb67d051">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"P&#233;cresse"</span>,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-9JwRqu/WMhEfe.png" alt="WMhEfe.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"P&#233;cresse"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"Le Pen"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"lepenpecresse.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href=""></a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4e65eab" class="outline-4">
+<h4 id="org4e65eab">Le Pen vs Zemmour</h4>
+<div class="outline-text-4" id="text-org4e65eab">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Zemmour"</span>,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-9JwRqu/gIJxoR.png" alt="gIJxoR.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgca4e1cd" class="outline-4">
+<h4 id="orgca4e1cd">Mélenchon vs Zemmour</h4>
+<div class="outline-text-4" id="text-orgca4e1cd">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Zemmour"</span>,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-9JwRqu/QfkrGG.png" alt="QfkrGG.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold;">import</span> matplotlib.pyplot <span style="font-weight: bold;">as</span> plt
+<span style="font-weight: bold;">import</span> os
+<span style="font-weight: bold;">from</span> pygifsicle <span style="font-weight: bold;">import</span> optimize
+<span style="font-weight: bold;">import</span> imageio
+
+<span style="font-weight: bold; font-style: italic;">reference</span> = <span style="font-style: italic;">"Zemmour"</span>
+<span style="font-weight: bold; font-style: italic;">challenger</span> = <span style="font-style: italic;">"M&#233;lenchon"</span>
+
+<span style="font-weight: bold; font-style: italic;">wins</span> = np.ceil(100 * np.<span style="font-weight: bold;">sum</span>(intentions_r[reference]&gt;intentions_r[challenger]) / <span style="font-weight: bold;">len</span>(intentions_r[reference]))
+
+<span style="font-weight: bold; font-style: italic;">filenames</span> = []
+<span style="font-weight: bold;">for</span> i <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">range</span>(1, 100):
+    <span style="font-weight: bold;">if</span> i % 10 == 0:
+        <span style="font-weight: bold;">print</span>(i)
+    plt.clf()
+    <span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+        intentions_r,
+        colors,
+        reference,
+        challenger,
+        scores={reference: f<span style="font-style: italic;">"{wins:.0f} sur 100"</span>, challenger: f<span style="font-style: italic;">"{100-wins:.0f} sur 100"</span>},
+        num_points=i
+    )
+
+    <span style="font-weight: bold; font-style: italic;">filename</span> = f<span style="font-style: italic;">"intentions-pairwise-{i}.png"</span>
+    plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+    filenames.append(filename)
+
+<span style="font-weight: bold;">with</span> imageio.get_writer(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, mode=<span style="font-style: italic;">"I"</span>) <span style="font-weight: bold;">as</span> writer:
+    <span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> filenames:
+        <span style="font-weight: bold; font-style: italic;">image</span> = imageio.imread(filename)
+        writer.append_data(image)
+
+optimize(<span style="font-style: italic;">"intentions-pairwise.gif"</span>, <span style="font-style: italic;">"zemmourmelenchon.gif"</span>)  <span style="font-weight: bold; font-style: italic;"># </span><span style="font-weight: bold; font-style: italic;">For creating a new one</span>
+
+<span style="font-weight: bold;">for</span> filename <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">set</span>(filenames):
+    os.remove(filename)
+</pre>
+</div>
+
+<p>
+<a href=""></a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org983aa53" class="outline-4">
+<h4 id="org983aa53">Primaire de la gauche</h4>
+<div class="outline-text-4" id="text-org983aa53">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Jadot"</span>,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-9JwRqu/7r1AlW.png" alt="7r1AlW.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Jadot"</span>,
+    <span style="font-style: italic;">"Hidalgo"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-9JwRqu/Rv87PI.png" alt="Rv87PI.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org6eabb40" class="outline-2">
+<h2 id="org6eabb40">Janvier 2022</h2>
+<div class="outline-text-2" id="text-org6eabb40">
+<p>
+Les rollings on fait leur entrée. Ils consistent à interroger chaque un nombre donné d'inscrits sur les listes électorales, et publier les résultats des X derniers jours. Les échantillons n'étant pas indépendants nous ne pouvons pas considérer les points successives à moins de modéliser les cohortes:
+</p>
+
+
+<!-- This HTML table template is generated by emacs 26.3 -->
+<table border="1">
+  <tr>
+    <td align="left" valign="top">
+      &nbsp;J-4&nbsp;
+    </td>
+    <td align="left" valign="top">
+      &nbsp;J-3&nbsp;
+    </td>
+    <td align="left" valign="top">
+      &nbsp;J-2&nbsp;
+    </td>
+  </tr>
+</table>
+
+<p>
+^     ^    ^      ^    ^
+</p>
+
+
+<p>
+Ici nous ne considérerons que les échantillons indépendants, c'est-à-dire un point tous les X jours pour avoir des cohortes indépendantes.
+</p>
+</div>
+
+<div id="outline-container-org870c9e1" class="outline-3">
+<h3 id="org870c9e1">Cluster17</h3>
+<div class="outline-text-3" id="text-org870c9e1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">num_exprimes</span> = 2558
+<span style="font-weight: bold; font-style: italic;">precision</span> = .5
+<span style="font-weight: bold; font-style: italic;">resultats</span> = {
+    <span style="font-style: italic;">"Arthaud"</span>: 0.5,
+    <span style="font-style: italic;">"Poutou"</span>: 1.5,
+    <span style="font-style: italic;">"Roussel"</span>: 2,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>: 12.5,
+    <span style="font-style: italic;">"Montebourg"</span>: 1,
+    <span style="font-style: italic;">"Hidalgo"</span>: 2,
+    <span style="font-style: italic;">"Jadot"</span>: 4.5,
+    <span style="font-style: italic;">"Taubira"</span>: 5.5,
+    <span style="font-style: italic;">"Macron"</span>: 22.5,
+    <span style="font-style: italic;">"P&#233;cresse"</span>: 13,
+    <span style="font-style: italic;">"Lassalle"</span>: 1,
+    <span style="font-style: italic;">"Asselineau"</span>: 1.5,
+    <span style="font-style: italic;">"Dupont-Aignan"</span>: 2.5,
+    <span style="font-style: italic;">"Philippot"</span>: 1.5,
+    <span style="font-style: italic;">"Le Pen"</span>: 14.5,
+    <span style="font-style: italic;">"Zemmour"</span>: 14,
+}
+<span style="font-weight: bold;">print</span>(<span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())))
+<span style="font-weight: bold;">assert</span> <span style="font-weight: bold;">sum</span>(<span style="font-weight: bold;">list</span>(resultats.values())) == 100
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">results_r</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) / 100
+<span style="font-weight: bold; font-style: italic;">precision_r</span> = precision / 100
+
+<span style="font-weight: bold;">with</span> pm.Model() <span style="font-weight: bold;">as</span> multinomial:
+    <span style="font-weight: bold; font-style: italic;">prior_intentions</span> = np.array(<span style="font-weight: bold;">list</span>(resultats.values())) * 0.1
+    <span style="font-weight: bold; font-style: italic;">p</span> = pm.Dirichlet(<span style="font-style: italic;">"intentions"</span>, prior_intentions, shape=(1,<span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">n</span> = pm.Multinomial(<span style="font-style: italic;">"respondants"</span>, num_exprimes, p, shape=(1, <span style="font-weight: bold;">len</span>(prior_intentions)))
+    <span style="font-weight: bold; font-style: italic;">r</span> = n / num_exprimes
+    <span style="font-weight: bold; font-style: italic;">r_obs</span> = pm.Uniform(<span style="font-style: italic;">'observed'</span>, r-precision_r, r+precision_r, observed=results_r)
+
+    <span style="font-weight: bold; font-style: italic;">trace</span> = pm.sample()
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/figureojReTN.png" alt="figureojReTN.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">intentions_r</span> = {k: trace[<span style="font-style: italic;">'intentions'</span>][:,0, i] <span style="font-weight: bold;">for</span> i,k <span style="font-weight: bold;">in</span> <span style="font-weight: bold;">enumerate</span>(resultats.keys())}
+<span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"15/01/2022"</span>,
+    <span style="font-style: italic;">"Cluster17 pour Marianne"</span>,
+    title=<span style="font-style: italic;">"Intentions de vote au premier tour"</span>,
+    sample_size=num_exprimes,
+    base=<span style="font-style: italic;">"Inscrits"</span>,
+    logo_path=<span style="font-style: italic;">"~/org/roam/images/logo.png"</span>
+)
+plt.tight_layout()
+plt.savefig(filename, dpi=200, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/figureFZzMy7.png" alt="figureFZzMy7.png" />
+</p>
+</div>
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/figureqJ3sa8.png" alt="figureqJ3sa8.png" />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org35b7b93" class="outline-4">
+<h4 id="org35b7b93">Mélenchon au 2nd tour?</h4>
+<div class="outline-text-4" id="text-org35b7b93">
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    <span style="font-style: italic;">"P&#233;cresse"</span>,
+    num_points=100
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/MTcenv.png" alt="MTcenv.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    <span style="font-style: italic;">"Le Pen"</span>,
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/hyd8Bw.png" alt="hyd8Bw.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    <span style="font-style: italic;">"Zemmour"</span>,
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/NenJUu.png" alt="NenJUu.png" />
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgb57956d" class="outline-4">
+<h4 id="orgb57956d">La gauche</h4>
+<div class="outline-text-4" id="text-orgb57956d">
+<p>
+A droite tout le monde est dans un mouchoir de poche.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"M&#233;lenchon"</span>,
+    <span style="font-style: italic;">"Taubira"</span>,
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/lKy2Zv.png" alt="lKy2Zv.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Taubira"</span>,
+    <span style="font-style: italic;">"Jadot"</span>,
+    num_points=100,
+    seed=1
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/hErGEM.png" alt="hErGEM.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="font-weight: bold; font-style: italic;">fig</span> = src.intentions.plot_pair(
+    intentions_r,
+    colors,
+    <span style="font-style: italic;">"Hidalgo"</span>,
+    <span style="font-style: italic;">"Roussel"</span>,
+    num_points=100,
+    seed=0
+)
+plt.savefig(filename, bbox_inches=<span style="font-style: italic;">"tight"</span>)
+filename
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="file:///tmp/babel-XcWuFV/mzWcQ5.png" alt="mzWcQ5.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgde019ec" class="outline-3">
+<h3 id="orgde019ec"><span class="todo TODO">TODO</span> Plot that shows the probability to be 1st, 2nd, 3rd, etc for each candidate</h3>
+</div>
+</div>
+</div>
+</body>
+</html>
